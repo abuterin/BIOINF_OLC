@@ -1,0 +1,7 @@
+$ git clone https://github.com/abuterin/BIOINF_OLC.git
+$ cd BIOUF_OLC
+$ git pull  //skini sve promjene sa servera na svoj lokalni
+$ git add <dokument> 
+$ git commit -m "<komentar>"
+$ git push -u origin
+$ git status
