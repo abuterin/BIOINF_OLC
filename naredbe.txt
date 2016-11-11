@@ -5,3 +5,6 @@ $ git add <dokument>
 $ git commit -m "<komentar>"
 $ git push -u origin
 $ git status
+
+//za stvaranje novih (privatnih) brancheva
+https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches
