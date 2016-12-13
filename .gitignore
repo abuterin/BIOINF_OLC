@@ -2,6 +2,7 @@
 main.cpp
 *test0*
 *.vcxproj*
+*.sln*
 
 *.suo
 *.user
