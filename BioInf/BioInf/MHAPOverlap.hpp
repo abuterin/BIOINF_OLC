@@ -1,6 +1,8 @@
 #pragma once
 
-
+/**
+	Made by  Ante
+*/
 class MHAPOverlap {
 private:
 	unsigned int _Aid;		//ID of read A
@@ -22,6 +24,11 @@ public:
 		unsigned int Blen) : _Aid{ Aid }, _Bid{ Bid }, _jaccardScore{ jaccardScore }, _sharedMinMers{ sharedMinMers },
 		_Aforward{ Afwd }, _Astart{ Astart }, _Aend{ Aend }, _Alength{ Alen }, _Bforward{ Bfwd }, _Bstart{ Bstart },
 		_Bend{ Bend }, _Blength{ Blen } {}
+
+	MHAPOverlap(MHAPOverlap& overlap) : _Aid{ overlap.Aid() }, _Bid{ overlap.Bid() }, _jaccardScore{ overlap.JaccardScore() }, 
+		_sharedMinMers{ overlap.sharedMinMers() }, _Aforward{ overlap.Aforward() }, _Astart{ overlap.Astart() }, _Aend{ overlap.Aend() }, 
+		_Alength{ overlap.Alength() }, _Bforward{ overlap.Bforward() }, _Bstart{ overlap.Bstart() }, _Bend{ overlap.Bend() }, 
+		_Blength{ overlap.Blength() } {}
 
 	unsigned int Aid() { return _Aid; }
 	unsigned int Bid() { return _Bid; }

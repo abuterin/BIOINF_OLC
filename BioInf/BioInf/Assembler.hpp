@@ -4,6 +4,9 @@
 
 #include "DovetailOverlap.hpp"
 
+/**
+ Class created by  Ante
+*/
 class Assembler {
 private:
 	Assembler() {} //private constructor, for this is singleton
@@ -18,10 +21,14 @@ public:
 		}
 		return assembler;
 	}
+	/**
+		Implemented by Ante
+	*/
+	DovetailOverlap*  calculateForcedHangs(MHAPOverlap&);
 
-	DovetailOverlap*  calculateForcedHangs(unsigned int aLow, unsigned int aHigh, unsigned int aLen,
-		unsigned int bLow, unsigned int bHigh, unsigned int bLen, unsigned int Aid, unsigned int Bid);
-
+	/**
+		Implemented by Ante
+	*/
 	void filterContained(std::vector<DovetailOverlap*>&);
 
 	~Assembler() { assembler = nullptr; }

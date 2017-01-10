@@ -2,15 +2,14 @@
 
 Assembler* Assembler::assembler = nullptr; //initialization of private static member 'assembler'
 
-DovetailOverlap* Assembler::calculateForcedHangs(unsigned int aLow, unsigned int aHigh, unsigned int aLen, unsigned int bLow, 
-	unsigned int bHigh, unsigned int bLen, unsigned int Aid, unsigned int Bid)
+DovetailOverlap* Assembler::calculateForcedHangs(MHAPOverlap& overlap)
 {
-	int aHang = aLow - bLow;				//a_hang
-	unsigned int bAfter = bLen - bHigh;		//number of bases B has after overlap
-	unsigned int aAfter = aLen - aHigh;		//number of bases A has after overlap
+	int aHang = overlap.Astart() - overlap.Bstart();				//a_hang
+	unsigned int bAfter = overlap.Blength() - overlap.Bend();		//number of bases B has after overlap
+	unsigned int aAfter = overlap.Alength() - overlap.Aend();		//number of bases A has after overlap
 	int bHang = bAfter - aAfter;		//b_hang
 
-	return new DovetailOverlap(aHang, bHang, Aid, Bid);
+	return new DovetailOverlap(aHang, bHang, overlap);
 }
 
 void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps) {
