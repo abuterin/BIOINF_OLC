@@ -5,6 +5,7 @@
 #include<iostream>
 #include<vector>
 #include<unordered_set>
+#include<string>
 
 #include "MHAPOverlap.hpp"
 #include "DovetailOverlap.hpp"
@@ -13,9 +14,8 @@
 using namespace std;
 
 int main() {
-
-	cout << "Hello Mirela and Otto!" << endl;
-
+	std::string str;
+	cout << str.max_size() << endl;
 
 	return 0;
 }

@@ -1,8 +1,10 @@
 #pragma once
 
 #include "MHAPOverlap.hpp"
-#include "MHAPOverlap.hpp"
 
+/**
+	Class created by Ante
+*/
 class DovetailOverlap : public MHAPOverlap{
 private:
 	int _aHang;

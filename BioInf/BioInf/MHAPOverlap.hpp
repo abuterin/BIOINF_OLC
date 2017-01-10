@@ -42,4 +42,7 @@ public:
 	unsigned int Bstart() { return _Bstart; }
 	unsigned int Bend() { return _Bend; }
 	unsigned int Blength() { return _Blength; }
+
+	double coveredPercentageReadA() { return ((double)(_Aend - _Astart)) / _Alength; }
+	double coveredPercentageReadB() { return ((double)(_Bend - _Bstart)) / _Blength; }
 };

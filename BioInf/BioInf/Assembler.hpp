@@ -30,6 +30,18 @@ public:
 		Implemented by Ante
 	*/
 	void filterContained(std::vector<DovetailOverlap*>&);
+	/**
+		Implemented by Ante
+		(Rahle, 2014)
+	*/
+	void filterTransitiveOverlaps(std::vector<DovetailOverlap*>&);
+
+	void filterShortOverlaps(std::vector<DovetailOverlap*>&, double);
+
+	/**
+		Implemented by Ante
+	*/
+	void filterErroneousOverlaps(std::vector<DovetailOverlap*>&, double);
 
 	~Assembler() { assembler = nullptr; }
 };

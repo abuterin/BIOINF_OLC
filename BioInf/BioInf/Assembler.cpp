@@ -42,3 +42,35 @@ void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps) {
 	overlaps.resize(index);
 
 }
+
+void Assembler::filterTransitiveOverlaps(std::vector<DovetailOverlap*>& overlaps) {
+}
+
+void Assembler::filterShortOverlaps(std::vector<DovetailOverlap*>& overlaps, double minCoverage) {
+	size_t index = 0;
+	
+	for (size_t i = 0; i < overlaps.size(); i++) {
+		if (overlaps[i]->coveredPercentageReadA() < minCoverage) {
+			continue;
+		}
+		else if (overlaps[i]->coveredPercentageReadB() < minCoverage) {
+			continue;
+		}
+
+		overlaps[index] = overlaps[i];
+		index++;
+	}
+	overlaps.resize(index);
+}
+
+void Assembler::filterErroneousOverlaps(std::vector<DovetailOverlap*>& overlaps, double maxError) {
+	size_t index = 0;
+	for (size_t i = 0; i < overlaps.size(); i++) {
+		if (overlaps[i]->JaccardScore() >= maxError) {
+			continue;
+		}
+		overlaps[index] = overlaps[i];
+		index++;
+	}
+	overlaps.resize(index);
+}
