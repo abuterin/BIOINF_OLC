@@ -3,8 +3,8 @@
 
 class MHAPOverlap {
 private:
-	unsigned int _Aid;
-	unsigned int _Bid;
+	unsigned int _Aid;		//ID of read A
+	unsigned int _Bid;		//ID of read B
 	double _jaccardScore;
 	unsigned int _sharedMinMers;
 	bool _Aforward;	//true - A forward, false - A reversed complement

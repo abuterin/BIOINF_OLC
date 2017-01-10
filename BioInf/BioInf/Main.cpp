@@ -4,8 +4,10 @@
 #include<cstdlib>
 #include<iostream>
 #include<vector>
+#include<unordered_set>
 
-#include "MAHPOverlap.hpp"
+#include "MHAPOverlap.hpp"
+#include "DovetailOverlap.hpp"
 #include "Assembler.hpp"
 
 using namespace std;
