@@ -7,11 +7,11 @@ private:
 	unsigned int _Bid;
 	double _jaccardScore;
 	unsigned int _sharedMinMers;
-	bool _Aforward;	//true - A forward, false - A rc
+	bool _Aforward;	//true - A forward, false - A reversed complement
 	unsigned int _Astart;
 	unsigned int _Aend;
 	unsigned int _Alength;
-	bool _Bforward;	//true - B forward, false - B rc
+	bool _Bforward;	//true - B forward, false - B reversed complement
 	unsigned int _Bstart;
 	unsigned int _Bend;
 	unsigned int _Blength;

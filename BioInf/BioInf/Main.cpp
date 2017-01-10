@@ -3,8 +3,10 @@
 #include<cstdio>
 #include<cstdlib>
 #include<iostream>
+#include<vector>
 
 #include "MAHPOverlap.hpp"
+#include "Assembler.hpp"
 
 using namespace std;
 
