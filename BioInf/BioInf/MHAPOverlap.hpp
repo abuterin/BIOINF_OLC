@@ -17,18 +17,17 @@ private:
 	unsigned int _Bstart;
 	unsigned int _Bend;
 	unsigned int _Blength;
+	unsigned int _overlapLength;
+
+	bool _suffixA;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
+	bool _suffixB;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
 
 public:
 	MHAPOverlap(unsigned int Aid, unsigned int Bid, double jaccardScore, unsigned int sharedMinMers, bool Afwd,
 		unsigned int Astart, unsigned int Aend, unsigned int Alen, bool Bfwd, unsigned int Bstart, unsigned int Bend,
-		unsigned int Blen) : _Aid{ Aid }, _Bid{ Bid }, _jaccardScore{ jaccardScore }, _sharedMinMers{ sharedMinMers },
-		_Aforward{ Afwd }, _Astart{ Astart }, _Aend{ Aend }, _Alength{ Alen }, _Bforward{ Bfwd }, _Bstart{ Bstart },
-		_Bend{ Bend }, _Blength{ Blen } {}
+		unsigned int Blen) ;
 
-	MHAPOverlap(MHAPOverlap& overlap) : _Aid{ overlap.Aid() }, _Bid{ overlap.Bid() }, _jaccardScore{ overlap.JaccardScore() }, 
-		_sharedMinMers{ overlap.sharedMinMers() }, _Aforward{ overlap.Aforward() }, _Astart{ overlap.Astart() }, _Aend{ overlap.Aend() }, 
-		_Alength{ overlap.Alength() }, _Bforward{ overlap.Bforward() }, _Bstart{ overlap.Bstart() }, _Bend{ overlap.Bend() }, 
-		_Blength{ overlap.Blength() } {}
+	MHAPOverlap(MHAPOverlap& overlap); 
 
 	unsigned int Aid() { return _Aid; }
 	unsigned int Bid() { return _Bid; }
@@ -45,4 +44,9 @@ public:
 
 	double coveredPercentageReadA() { return ((double)(_Aend - _Astart)) / _Alength; }
 	double coveredPercentageReadB() { return ((double)(_Bend - _Bstart)) / _Blength; }
+
+	bool suffixA() { return _suffixA; }
+	bool suffixB() { return _suffixB; }
+
+	unsigned int overlapLength() { return _overlapLength; }
 };

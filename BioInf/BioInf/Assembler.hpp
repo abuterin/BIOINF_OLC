@@ -4,6 +4,9 @@
 
 #include "DovetailOverlap.hpp"
 
+#define IS_EQUAL(x,y,error) ((y <= x + error) && (x <= y + error))
+#define ABS(x) ((x < 0) ? x * (-1) : x)
+
 /**
  Class created by  Ante
 */
@@ -42,6 +45,8 @@ public:
 		Implemented by Ante
 	*/
 	void filterErroneousOverlaps(std::vector<DovetailOverlap*>&, double);
+
+	bool isTransitive(DovetailOverlap*, DovetailOverlap*, DovetailOverlap*);
 
 	~Assembler() { assembler = nullptr; }
 };
