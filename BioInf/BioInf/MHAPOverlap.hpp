@@ -1,22 +1,23 @@
 #pragma once
+#include<ostream>
 
 /**
 	Made by  Ante
 */
 class MHAPOverlap {
 private:
-	unsigned int _Aid;		//ID of read A
-	unsigned int _Bid;		//ID of read B
+	unsigned int _aID;		//ID of read A
+	unsigned int _bID;		//ID of read B
 	double _jaccardScore;
 	unsigned int _sharedMinMers;
-	bool _Aforward;	//true - A forward, false - A reversed complement
-	unsigned int _Astart;
-	unsigned int _Aend;
-	unsigned int _Alength;
-	bool _Bforward;	//true - B forward, false - B reversed complement
-	unsigned int _Bstart;
-	unsigned int _Bend;
-	unsigned int _Blength;
+	bool _aForward;	//true - A forward, false - A reversed complement
+	unsigned int _aStart;
+	unsigned int _aEnd;
+	unsigned int _aLength;
+	bool _bForward;	//true - B forward, false - B reversed complement
+	unsigned int _bStart;
+	unsigned int _bEnd;
+	unsigned int _bLength;
 	unsigned int _overlapLength;
 
 	bool _suffixA;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
@@ -29,24 +30,31 @@ public:
 
 	MHAPOverlap(MHAPOverlap& overlap); 
 
-	unsigned int Aid() { return _Aid; }
-	unsigned int Bid() { return _Bid; }
-	double JaccardScore() { return _jaccardScore; }
+	unsigned int aID() { return _aID; }
+	unsigned int bID() { return _bID; }
+	double jaccardScore() { return _jaccardScore; }
 	unsigned int sharedMinMers() { return _sharedMinMers; }
-	bool Aforward() { return _Aforward; }
-	unsigned int Astart() { return _Astart; }
-	unsigned int Aend() { return _Aend; }
-	unsigned int Alength() { return _Alength; }
-	bool Bforward() { return _Bforward; }
-	unsigned int Bstart() { return _Bstart; }
-	unsigned int Bend() { return _Bend; }
-	unsigned int Blength() { return _Blength; }
+	bool aForward() { return _aForward; }
+	unsigned int aStart() { return _aStart; }
+	unsigned int aEnd() { return _aEnd; }
+	unsigned int aLength() { return _aLength; }
+	bool bForward() { return _bForward; }
+	unsigned int bStart() { return _bStart; }
+	unsigned int bEnd() { return _bEnd; }
+	unsigned int bLength() { return _bLength; }
 
-	double coveredPercentageReadA() { return ((double)(_Aend - _Astart)) / _Alength; }
-	double coveredPercentageReadB() { return ((double)(_Bend - _Bstart)) / _Blength; }
+	double coveredPercentageReadA() { return ((double)(_aEnd - _aStart)) / _aLength; }
+	double coveredPercentageReadB() { return ((double)(_bEnd - _bStart)) / _bLength; }
 
 	bool suffixA() { return _suffixA; }
 	bool suffixB() { return _suffixB; }
 
 	unsigned int overlapLength() { return _overlapLength; }
+
+	friend std::ostream& operator<<(std::ostream& output, MHAPOverlap o) {
+		output << o._aID << " " << o._bID << " " << o._jaccardScore << " " << o._sharedMinMers << " " << (o._aForward ? 0 : 1) << " "
+			<<o._aStart << " " << o._aEnd << " " << o._aLength << " " << (o._bForward ? 0 : 1) << " " << o._bStart << " " << o._bEnd
+			<< " " << o._bLength;
+		return output;
+	}
 };

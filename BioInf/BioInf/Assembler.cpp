@@ -4,9 +4,9 @@ Assembler* Assembler::assembler = nullptr; //initialization of private static me
 
 DovetailOverlap* Assembler::calculateForcedHangs(MHAPOverlap& overlap)
 {
-	int aHang = overlap.Astart() - overlap.Bstart();				//a_hang
-	unsigned int bAfter = overlap.Blength() - overlap.Bend();		//number of bases B has after overlap
-	unsigned int aAfter = overlap.Alength() - overlap.Aend();		//number of bases A has after overlap
+	int aHang = overlap.aStart() - overlap.bStart();				//a_hang
+	unsigned int bAfter = overlap.bLength() - overlap.bEnd();		//number of bases B has after overlap
+	unsigned int aAfter = overlap.aLength() - overlap.aEnd();		//number of bases A has after overlap
 	int bHang = bAfter - aAfter;		//b_hang
 
 	return new DovetailOverlap(aHang, bHang, overlap);
@@ -18,20 +18,20 @@ void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps) {
 
 	for (DovetailOverlap* overlap : overlaps) {
 		if (overlap->aHang() <= 0 && overlap->bHang() >= 0) {
-			containedReads->insert(overlap->Aid());
+			containedReads->insert(overlap->aID());
 		}
 		else if (overlap->aHang() >= 0 && overlap->bHang() <= 0) {
-			containedReads->insert(overlap->Bid());
+			containedReads->insert(overlap->bID());
 		}
 	}
 
 	index = 0;
 
 	for (size_t i = 0; i < overlaps.size(); i++) {
-		if (containedReads->find(overlaps[i]->Aid()) != containedReads->end()) { //read A found
+		if (containedReads->find(overlaps[i]->aID()) != containedReads->end()) { //read A found
 			continue;
 		}
-		else if (containedReads->find(overlaps[i]->Bid()) != containedReads->end()) {//read B found
+		else if (containedReads->find(overlaps[i]->bID()) != containedReads->end()) {//read B found
 			continue;
 		}
 
@@ -41,9 +41,6 @@ void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps) {
 
 	overlaps.resize(index);
 
-}
-
-void Assembler::filterTransitiveOverlaps(std::vector<DovetailOverlap*>& overlaps) {
 }
 
 void Assembler::filterShortOverlaps(std::vector<DovetailOverlap*>& overlaps, double minCoverage) {
@@ -66,7 +63,7 @@ void Assembler::filterShortOverlaps(std::vector<DovetailOverlap*>& overlaps, dou
 void Assembler::filterErroneousOverlaps(std::vector<DovetailOverlap*>& overlaps, double maxError) {
 	size_t index = 0;
 	for (size_t i = 0; i < overlaps.size(); i++) {
-		if (overlaps[i]->JaccardScore() >= maxError) {
+		if (overlaps[i]->jaccardScore() >= maxError) {
 			continue;
 		}
 		overlaps[index] = overlaps[i];
@@ -86,7 +83,7 @@ bool Assembler::isTransitive(DovetailOverlap * f, DovetailOverlap * g, DovetailO
 	double alpha = 0.1;
 	//A is readA in 'f' overlap
 	//B is readB in 'f' overlap
-	if (f->Aid() == g->Bid()) { //A is readB in 'g' overlap
+	if (f->aID() == g->bID()) { //A is readB in 'g' overlap
 										//B is then readA in 'h' 
 										//C is readA in 'g' overlap and readB in 'h' overlap
 		if (g->suffixA() == h->suffixB()) {		//check node C
@@ -108,8 +105,8 @@ bool Assembler::isTransitive(DovetailOverlap * f, DovetailOverlap * g, DovetailO
 		return IS_EQUAL(gHangC + hHangB, fHangB, error * f->overlapLength() + alpha);
 		
 	}
-	else {	//A is readA in 'g' overlap, although this comparisson might not be precise
-			//B is then readB in 'h' overlap, although this is suspicious as well
+	else {	//A is readA in 'g' overlap
+			//B is then readB in 'h' overlap
 			//C is readB in 'g' overlap and readA in 'h' overlap
 
 		if (g->suffixB() == h->suffixA()) {		//check node C
@@ -132,3 +129,33 @@ bool Assembler::isTransitive(DovetailOverlap * f, DovetailOverlap * g, DovetailO
 	}
 
 }
+
+void Assembler::filterTransitiveOverlaps(std::vector<DovetailOverlap*>& overlaps) {
+	size_t index;
+	std::vector<DovetailOverlap*> transitiveOverlaps;
+
+	for (DovetailOverlap* f : overlaps) {
+		for (DovetailOverlap* g : overlaps) {
+			if (g == f) { 
+				continue;	//skip same overlap as f
+			}
+
+			if (f->aID() == g->aID() || f->aID() == g->bID()) {
+				for (DovetailOverlap* h : overlaps) {
+					if (h == f || h == g) {
+						continue; //skip f and g overlaps
+					}
+
+					if (f->bID() == h->aID() || f->bID() == h->bID()) {
+						if (isTransitive(f, g, h)) {
+							transitiveOverlaps.push_back(f);
+						}
+					}
+				}
+			}//ovdje sam stao:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Ante
+			
+		}
+	}
+
+}
+
