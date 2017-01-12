@@ -86,8 +86,8 @@ bool Assembler::isTransitive(DovetailOverlap * f, DovetailOverlap * g, DovetailO
 	double alpha = 0.1;
 	//A is readA in 'f' overlap
 	//B is readB in 'f' overlap
-	if (f->Alength() == g->Blength()) { //A is readB in 'g' overlap, although this comparisson might not be precise
-										//B is then readA in 'h' overlap, although this is suspicious as well
+	if (f->Aid() == g->Bid()) { //A is readB in 'g' overlap
+										//B is then readA in 'h' 
 										//C is readA in 'g' overlap and readB in 'h' overlap
 		if (g->suffixA() == h->suffixB()) {		//check node C
 			return false;
