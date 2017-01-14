@@ -12,7 +12,7 @@ DovetailOverlap* Assembler::calculateForcedHangs(MHAPOverlap& overlap)
 	return new DovetailOverlap(aHang, bHang, overlap);
 }
 
-void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps) {
+void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps, map<unsigned int, Read*>& reads) {
 	std::unordered_set<unsigned int>* containedReads = new std::unordered_set<unsigned int>();
 	size_t index;
 
@@ -29,10 +29,12 @@ void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps) {
 
 	for (size_t i = 0; i < overlaps.size(); i++) {
 		if (containedReads->find(overlaps[i]->aID()) != containedReads->end()) { //read A found
+			reads.erase(overlaps[i]->aID());			//remove sequence read also
 			continue;
 		}
 		else if (containedReads->find(overlaps[i]->bID()) != containedReads->end()) {//read B found
-			continue;
+			reads.erase(overlaps[i]->bID());			//remove sequence read also
+			continue;	
 		}
 
 		overlaps[index] = overlaps[i];

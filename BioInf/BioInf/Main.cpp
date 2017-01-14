@@ -5,7 +5,7 @@
 #include<iostream>
 #include<fstream>
 #include<vector>
-#include<unordered_set>
+#include<map>
 #include<string>
 
 #include "MHAPOverlap.hpp"
@@ -17,7 +17,7 @@
 using namespace std;
 
 typedef struct vector<MHAPOverlap*> Overlaps;
-typedef struct vector<Read*> Reads;
+typedef struct map<unsigned int, Read*> Reads;
 
 int main(int argc, char *argv[]) {
 
@@ -73,14 +73,15 @@ int main(int argc, char *argv[]) {
 	unsigned int bLength;
 	/*size_t index = 0;*/
 
-	Reads reads;//vector<Read*>
+	Reads reads;//map<unsigned int, Read*>
 	while (getline(fastaFile, line)) {
 		if (!sequenceLine) {	//it has read ID line
 			line.erase(line.begin());
 			readID = stoi(line, nullptr);
 		}
 		else {
-			reads.push_back(new Read(line, readID));
+			pair<unsigned int, Read*> read{ readID, new Read(line, readID) };
+			reads.insert(read);
 		}
 		sequenceLine = !sequenceLine;
 		
@@ -105,8 +106,8 @@ int main(int argc, char *argv[]) {
 	//******************************
 	Graph ourGraph(reads,overlaps);
 
-	for (Read* read : reads) {
-		delete read;
+	for (size_t i = 0; i < reads.size(); i++) {
+		delete reads[i];
 	}
 	for (MHAPOverlap* temp : overlaps) {
 		delete temp;
