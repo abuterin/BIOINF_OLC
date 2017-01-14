@@ -12,6 +12,7 @@
 #include "DovetailOverlap.hpp"
 #include "Assembler.hpp"
 #include "Read.hpp"
+#include "Graph.h"
 
 using namespace std;
 
@@ -71,7 +72,7 @@ int main(int argc, char *argv[]) {
 	unsigned int bLength;
 	/*size_t index = 0;*/
 
-	Reads reads;
+	Reads reads;//vector<Read*>
 	while (getline(fastaFile, line)) {
 		if (!sequenceLine) {	//it has read ID line
 			line.erase(line.begin());
@@ -85,7 +86,7 @@ int main(int argc, char *argv[]) {
 	}
 	fastaFile.close();
 
-	Overlaps overlaps;
+	Overlaps overlaps; // vector<MHAPOverlap*>
 	while (fscanf_s(mhapFile, "%u %u %lf %u %d %u %u %u %d %u %u %u\n", &aID, &bID, &error, &sharedMinMers, &aFwd, &aStart, &aEnd,
 		&aLength, &bFwd, &bStart, &bEnd, &bLength) == 12) {
 		bool aForward = (aFwd == 1) ? false : true;
@@ -98,6 +99,10 @@ int main(int argc, char *argv[]) {
 	}
 	fclose(mhapFile);
 	/*outFile.close();*/
+
+
+	//******************************
+	Graph ourGraph(reads,overlaps);
 
 	for (Read* read : reads) {
 		delete read;

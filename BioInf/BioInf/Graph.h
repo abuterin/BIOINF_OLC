@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include "MHAPOverlap.hpp"
+#include "Assembler.hpp"
+#include "Read.hpp"
 
 using namespace std;
 
@@ -51,8 +53,8 @@ public:
 class Graph {
 	vector<Vertex> vertices;
 	vector<Edge> edges;
-	Graph(vector<string> reads, vector<MHAPOverlap*> overlaps) {
-		for (int i = 0; i < reads.size(); i++) {
+	Graph(vector<Read*> reads, vector<MHAPOverlap*> overlaps) {
+		/*for (int i = 0; i < reads.size(); i++) {
 			Vertex ver(reads[i]);
 			vertices.push_back(ver);
 		}
@@ -63,7 +65,7 @@ class Graph {
 			int edgeId = j;
 			Edge edge_a(edgeId,  , source);
 			//Edge(int _edgeId, MHAPOverlap _overlap, unsigned int _sourceNode) {
-		}
+		}*/
 	}
 
 
