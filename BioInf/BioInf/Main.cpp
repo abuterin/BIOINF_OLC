@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 	/*size_t index = 0;*/
 
 	Overlaps overlaps;
-	while (fscanf(mhapFile, "%u %u %lf %u %d %u %u %u %d %u %u %u\n", &aID, &bID, &error, &sharedMinMers, &aFwd, &aStart, &aEnd,
+	while (fscanf_s(mhapFile, "%u %u %lf %u %d %u %u %u %d %u %u %u\n", &aID, &bID, &error, &sharedMinMers, &aFwd, &aStart, &aEnd,
 		&aLength, &bFwd, &bStart, &bEnd, &bLength) == 12) {
 		bool aForward = (aFwd == 1) ? false : true;
 		bool bForward = (bFwd == 1) ? false : true;
