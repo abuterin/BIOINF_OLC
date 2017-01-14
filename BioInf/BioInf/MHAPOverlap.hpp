@@ -46,8 +46,15 @@ public:
 	double coveredPercentageReadA() { return ((double)(_aEnd - _aStart)) / _aLength; }
 	double coveredPercentageReadB() { return ((double)(_bEnd - _bStart)) / _bLength; }
 
-	bool suffixA() { return _positionA; }
+	bool suffixA() { return _positionA; }  //true - begining, false - end
 	bool suffixB() { return _positionB; }
+
+	bool part(unsigned int ID) {
+		if (ID == this->aID())
+			return suffixA();
+		else
+			return suffixB();
+	}
 
 	bool isUsingSuffix(unsigned int);
 
