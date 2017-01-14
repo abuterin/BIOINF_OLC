@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 
 
 	//******************************
-	Graph ourGraph(reads,overlaps);
+	//Graph ourGraph(reads,overlaps);
 
 	for (size_t i = 0; i < reads.size(); i++) {
 		delete reads[i];
