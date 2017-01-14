@@ -11,30 +11,41 @@
 #include "MHAPOverlap.hpp"
 #include "DovetailOverlap.hpp"
 #include "Assembler.hpp"
+#include "Read.hpp"
 
 using namespace std;
 
 typedef struct vector<MHAPOverlap*> Overlaps;
-typedef struct vector<string> Reads;
+typedef struct vector<Read*> Reads;
 
 int main(int argc, char *argv[]) {
 
-	if (argc != 2) {
-		cerr << "Excpeted one argument - name of the .mhap file!" << endl;
+	if (argc != 3) {
+		cerr << "Excpeted two argument - first name of the .fasta file and then name of the .mhap file!" << endl;
 		exit(-1);
 	}
 
-	if (strstr(argv[1], ".mhap") == nullptr) {
+	if (strstr(argv[1], ".fasta") == nullptr) {
+		cerr << "Wrong file format - expected .mhap file!" << endl;
+		exit(-1);
+	}
+
+	if (strstr(argv[2], ".mhap") == nullptr) {
 		cerr << "Wrong file format - expected .mhap file!" << endl;
 		exit(-1);
 	}
 	
-	FILE* mhapFile = fopen(argv[1], "r");
+	ifstream fastaFile(argv[1]);
+	FILE* mhapFile = fopen(argv[2], "r");
 	/*ofstream outFile;
 	outFile.open("results.mhap");
 	*/
-	if (mhapFile == nullptr) {
+	if (!fastaFile.is_open()) {
 		cerr << "Couldn't open " << argv[1] << endl;
+		exit(-1);
+	}
+	if (mhapFile == nullptr) {
+		cerr << "Couldn't open " << argv[2] << endl;
 		exit(-1);
 	}
 	/*
@@ -43,6 +54,9 @@ int main(int argc, char *argv[]) {
 		exit(-1);
 	}
 	*/
+	string line;
+	bool sequenceLine = false; //true if next line to be read is sequence line, false if it is ID line
+	unsigned int readID;
 	unsigned int aID;
 	unsigned int bID;
 	double error;
@@ -56,6 +70,20 @@ int main(int argc, char *argv[]) {
 	unsigned int aLength;
 	unsigned int bLength;
 	/*size_t index = 0;*/
+
+	Reads reads;
+	while (getline(fastaFile, line)) {
+		if (!sequenceLine) {	//it has read ID line
+			line.erase(line.begin());
+			readID = stoi(line, nullptr);
+		}
+		else {
+			reads.push_back(new Read(line, readID));
+		}
+		sequenceLine = !sequenceLine;
+		
+	}
+	fastaFile.close();
 
 	Overlaps overlaps;
 	while (fscanf_s(mhapFile, "%u %u %lf %u %d %u %u %u %d %u %u %u\n", &aID, &bID, &error, &sharedMinMers, &aFwd, &aStart, &aEnd,
@@ -71,6 +99,9 @@ int main(int argc, char *argv[]) {
 	fclose(mhapFile);
 	/*outFile.close();*/
 
+	for (Read* read : reads) {
+		delete read;
+	}
 	for (MHAPOverlap* temp : overlaps) {
 		delete temp;
 	}

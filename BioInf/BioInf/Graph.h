@@ -15,8 +15,8 @@ public:
 	Edge(int _edgeId, MHAPOverlap _overlap, unsigned int _sourceNode) {
 		cout << "Constructor called." << endl;
 		edgeId = _edgeId;
-		overlap = new MHAPOverlap(_overlap.aID, _overlap.bID, _overlap.jaccardScore, _overlap.sharedMinMers, _overlap.aForward, _overlap.aStart, _overlap.aEnd,
-			_overlap.aLength, _overlap.bForward, _overlap.bStart, _overlap.bEnd, _overlap.bLength);
+		overlap = new MHAPOverlap(_overlap.aID(), _overlap.bID(), _overlap.jaccardScore(), _overlap.sharedMinMers(), _overlap.aForward(), _overlap.aStart(), _overlap.aEnd(),
+			_overlap.aLength(), _overlap.bForward(), _overlap.bStart(), _overlap.bEnd(), _overlap.bLength());
 		sourceNode = _sourceNode;
 	}
 	~Edge() {
