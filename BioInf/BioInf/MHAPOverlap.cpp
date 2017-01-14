@@ -5,6 +5,7 @@ MHAPOverlap::MHAPOverlap(unsigned int Aid, unsigned int Bid, double jaccardScore
 	unsigned int Blen) : _aID{ Aid }, _bID{ Bid }, _jaccardScore{ jaccardScore }, _sharedMinMers{ sharedMinMers },
 	_aForward{ Afwd }, _aStart{ Astart }, _aEnd{ Aend }, _aLength{ Alen }, _bForward{ Bfwd }, _bStart{ Bstart },
 	_bEnd{ Bend }, _bLength{ Blen } {
+
 	if (_aEnd == _aLength) {
 		_suffixA = false;
 	}
