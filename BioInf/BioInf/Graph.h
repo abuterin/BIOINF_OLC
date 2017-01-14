@@ -51,6 +51,7 @@ public:
 };
 
 class Graph {
+public:
 	vector<Vertex> vertices;
 	vector<Edge> edges;
 	Graph(vector<Read*> reads, vector<MHAPOverlap*> overlaps) {
