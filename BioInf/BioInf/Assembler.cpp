@@ -29,11 +29,15 @@ void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps, map<uns
 
 	for (size_t i = 0; i < overlaps.size(); i++) {
 		if (containedReads->find(overlaps[i]->aID()) != containedReads->end()) { //read A found
+			delete reads.find(overlaps[i]->aID())->second;
 			reads.erase(overlaps[i]->aID());			//remove sequence read also
+			delete overlaps[i];
 			continue;
 		}
 		else if (containedReads->find(overlaps[i]->bID()) != containedReads->end()) {//read B found
+			delete reads.find(overlaps[i]->aID())->second;
 			reads.erase(overlaps[i]->bID());			//remove sequence read also
+			delete overlaps[i];
 			continue;	
 		}
 
@@ -50,9 +54,11 @@ void Assembler::filterShortOverlaps(std::vector<DovetailOverlap*>& overlaps, dou
 	
 	for (size_t i = 0; i < overlaps.size(); i++) {
 		if (overlaps[i]->coveredPercentageReadA() < minCoverage) {
+			delete overlaps[i];
 			continue;
 		}
 		else if (overlaps[i]->coveredPercentageReadB() < minCoverage) {
+			delete overlaps[i];
 			continue;
 		}
 
@@ -66,6 +72,7 @@ void Assembler::filterErroneousOverlaps(std::vector<DovetailOverlap*>& overlaps,
 	size_t index = 0;
 	for (size_t i = 0; i < overlaps.size(); i++) {
 		if (overlaps[i]->jaccardScore() >= maxError) {
+			delete overlaps[i];
 			continue;
 		}
 		overlaps[index] = overlaps[i];
@@ -133,7 +140,7 @@ bool Assembler::isTransitive(DovetailOverlap * f, DovetailOverlap * g, DovetailO
 }
 
 void Assembler::filterTransitiveOverlaps(std::vector<DovetailOverlap*>& overlaps) {
-	//std::vector<DovetailOverlap*> transitiveOverlaps;
+	
 	std::unordered_set<DovetailOverlap*> transitiveOverlaps;
 
 	for (DovetailOverlap* f : overlaps) {
@@ -185,6 +192,7 @@ void Assembler::filterTransitiveOverlaps(std::vector<DovetailOverlap*>& overlaps
 	size_t index = 0;
 	for (size_t i = 0; i < overlaps.size(); i++) {
 		if (transitiveOverlaps.find(overlaps[i]) != transitiveOverlaps.end()) {
+			delete overlaps[i];
 			continue;
 		}
 
