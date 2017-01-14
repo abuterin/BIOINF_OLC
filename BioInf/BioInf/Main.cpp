@@ -37,7 +37,8 @@ int main(int argc, char *argv[]) {
 	}
 	
 	ifstream fastaFile(argv[1]);
-	FILE* mhapFile = fopen(argv[2], "r");
+	FILE* mhapFile;
+	fopen_s(&mhapFile, argv[2], "r");
 	/*ofstream outFile;
 	outFile.open("results.mhap");
 	*/
