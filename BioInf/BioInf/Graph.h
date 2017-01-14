@@ -34,17 +34,17 @@ public:
 		readID = _readID;
 	}
 	void addEdge(Edge _edge) {
-		bool using_suffix = _edge.overlap.isUsingSuffix(this->readID);
+		bool using_suffix = _edge.overlap->isUsingSuffix(this->readID);
 		if (using_suffix)
 			edges_e.push_back(_edge);//bridovi koji koriste readov kraj
 		else
 			edges_b.push_back(_edge);
 	}
 };
-//typedef struct map<unsigned int, Read*> Reads;
+
 class Graph {
 public:
-	map<unsigned int, Vertex> vertices;
+	map<unsigned int, Vertex> vertices;//Nodes
 	vector<Edge> edges;
 	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 		//stvaranje čvorova
@@ -54,7 +54,7 @@ public:
 			vertices[it->first] = ver;
 		}
 		//stvaranje bridova
-		for (unsigned int j = 0; j < overlaps.size; j++) {
+		for (unsigned int j = 0; j < overlaps.size(); j++) {
 			MHAPOverlap* ovp = overlaps[j];
 
 			Edge edge_a(edges.size(), ovp, ovp->aID());
@@ -71,4 +71,40 @@ public:
 		}
 	}
 
+	bool removeNodesWithNoEdges() {//ako je došlo do promjena vrati true
+		vector<unsigned int> verticesToRemove;
+		bool changes = false;//obrisali smo barem jedan čvor
+
+		map<unsigned int, Vertex>::iterator it;
+		for (it = vertices.begin(); it != vertices.end(); it++) {
+			//it->first=IdRead
+			//it->second=vertex
+			if ((it->second).edges_b.size() == 0 && (it->second).edges_e.size() == 0)
+				verticesToRemove.push_back(it->first);
+		}
+		if (verticesToRemove.size() != 0) {
+			changes = true;
+			for (int i = 0; i < verticesToRemove.size(); i++) {
+				vertices.erase(verticesToRemove[i]);
+			}
+		}
+		return changes;
+	}
+
+	bool trim() {
+		//ako je došlo do promjena vrati true
+	}
+	bool popBubbles() {
+		//ako je došlo do promjena vrati true
+	}
+	void simplify() {
+		bool graphChanges = true;
+		while (graphChanges)
+		{
+			graphChanges = false;
+			if (removeNodesWithNoEdges()) graphChanges = true;
+			if (trim()) graphChanges = true;
+			if (popBubbles()) graphChanges = true;
+		}
+	}
 };
