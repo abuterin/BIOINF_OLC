@@ -46,8 +46,8 @@ public:
 			edges_b.push_back(_edge);
 	}*/
 
-	//bool suffixA() { return _suffixA; }
-	//bool suffixB() { return _suffixB; }
+	//bool suffixA() { return _positionA; }
+	//bool suffixB() { return _positionB; }
 };
 
 class Graph {
