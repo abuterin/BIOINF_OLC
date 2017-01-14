@@ -20,8 +20,8 @@ private:
 	unsigned int _bLength;
 	unsigned int _overlapLength;
 
-	bool _suffixA;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
-	bool _suffixB;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
+	bool _positionA;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
+	bool _positionB;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
 
 public:
 	MHAPOverlap(unsigned int Aid, unsigned int Bid, double jaccardScore, unsigned int sharedMinMers, bool Afwd,
@@ -46,8 +46,10 @@ public:
 	double coveredPercentageReadA() { return ((double)(_aEnd - _aStart)) / _aLength; }
 	double coveredPercentageReadB() { return ((double)(_bEnd - _bStart)) / _bLength; }
 
-	bool suffixA() { return _suffixA; }
-	bool suffixB() { return _suffixB; }
+	bool suffixA() { return _positionA; }
+	bool suffixB() { return _positionB; }
+
+	bool isUsingSuffix(unsigned int);
 
 	unsigned int overlapLength() { return _overlapLength; }
 
