@@ -133,8 +133,8 @@ bool Assembler::isTransitive(DovetailOverlap * f, DovetailOverlap * g, DovetailO
 }
 
 void Assembler::filterTransitiveOverlaps(std::vector<DovetailOverlap*>& overlaps) {
-	size_t index;
-	std::vector<DovetailOverlap*> transitiveOverlaps;
+	//std::vector<DovetailOverlap*> transitiveOverlaps;
+	std::unordered_set<DovetailOverlap*> transitiveOverlaps;
 
 	for (DovetailOverlap* f : overlaps) {
 		for (DovetailOverlap* g : overlaps) {
@@ -142,22 +142,55 @@ void Assembler::filterTransitiveOverlaps(std::vector<DovetailOverlap*>& overlaps
 				continue;	//skip same overlap as f
 			}
 
-			if (f->aID() == g->aID() || f->aID() == g->bID()) {
+			if (f->aID() == g->aID()) {		//read A is the same in f and g
 				for (DovetailOverlap* h : overlaps) {
 					if (h == f || h == g) {
 						continue; //skip f and g overlaps
 					}
 
-					if (f->bID() == h->aID() || f->bID() == h->bID()) {
+					if (f->bID() == h->aID() && g->bID() == h->bID()) {//read B is the same in f and h, and read C is the same in
+						if (isTransitive(f, g, h)) {					//g and h
+							transitiveOverlaps.insert(f);
+						}
+					}
+					else if (f->bID() == h->bID() && g->bID() == h->aID()) {//read B is the same in f and h, and read C is the same in
 						if (isTransitive(f, g, h)) {
-							transitiveOverlaps.push_back(f);
+							transitiveOverlaps.insert(f);
 						}
 					}
 				}
-			}//ovdje sam stao:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Ante
+			}
+			else if (f->aID() == g->bID()) {		//read A in f is the same as read B in g
+				for (DovetailOverlap* h : overlaps) {
+					if (h == f || h == g) {
+						continue; //skip f and g overlaps
+					}
+
+					if (f->bID() == h->aID() && g->aID() == h->bID()) {//read B is the same in f and h, and read C is the same in
+						if (isTransitive(f, g, h)) {					//g and h
+							transitiveOverlaps.insert(f);
+						}
+					}
+					else if (f->bID() == h->bID() && g->aID() == h->aID()) {//read B is the same in f and h, and read C is the same in
+						if (isTransitive(f, g, h)) {
+							transitiveOverlaps.insert(f);
+						}
+					}
+				}
+			}
 			
 		}
 	}
 
+	size_t index = 0;
+	for (size_t i = 0; i < overlaps.size(); i++) {
+		if (transitiveOverlaps.find(overlaps[i]) != transitiveOverlaps.end()) {
+			continue;
+		}
+
+		overlaps[index] = overlaps[i];
+		index++;
+	}
+	overlaps.resize(index);
 }
 
