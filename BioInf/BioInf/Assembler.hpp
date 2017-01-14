@@ -1,11 +1,15 @@
 #pragma once
 #include<vector>
 #include<unordered_set>
+#include<map>
 
+#include "Read.hpp"
 #include "DovetailOverlap.hpp"
 
 #define IS_EQUAL(x,y,error) ((y <= x + error) && (x <= y + error))
 #define ABS(x) ((x < 0) ? x * (-1) : x)
+
+using namespace std;
 
 /**
  Class created by  Ante
@@ -32,17 +36,17 @@ public:
 	/**
 		Implemented by Ante
 	*/
-	void filterContained(std::vector<DovetailOverlap*>&);
+	void filterContained(vector<DovetailOverlap*>&, map<unsigned int, Read*>&);
 
 	/**
 		Implemented by Ante
 	*/
-	void filterShortOverlaps(std::vector<DovetailOverlap*>&, double);
+	void filterShortOverlaps(vector<DovetailOverlap*>&, double);
 
 	/**
 		Implemented by Ante
 	*/
-	void filterErroneousOverlaps(std::vector<DovetailOverlap*>&, double);
+	void filterErroneousOverlaps(vector<DovetailOverlap*>&, double);
 
 	/**
 		Implemented by Ante
@@ -54,7 +58,7 @@ public:
 		Implemented by Ante
 		(Rahle, 2014)
 	*/
-	void filterTransitiveOverlaps(std::vector<DovetailOverlap*>&);
+	void filterTransitiveOverlaps(vector<DovetailOverlap*>&);
 
 	~Assembler() { assembler = nullptr; }
 };
