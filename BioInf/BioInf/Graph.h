@@ -5,7 +5,6 @@
 #include "MHAPOverlap.hpp"
 #include "Assembler.hpp"
 #include "Read.hpp"
-
 using namespace std;
 
 class Edge {
@@ -42,17 +41,17 @@ public:
 			edges_b.push_back(_edge);
 	}
 };
-
+//typedef struct map<unsigned int, Read*> Reads;
 class Graph {
 public:
 	map<unsigned int, Vertex> vertices;
 	vector<Edge> edges;
-	Graph(vector<Read*> reads, vector<MHAPOverlap*> overlaps) {
+	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 		//stvaranje čvorova
-		for (int i = 0; i < reads.size(); i++) {
-			Vertex ver(reads[i]->read(), reads[i]->ID()); //stvori čvor koji sadrži string i ID
-			//vertices.push_back(ver);
-			vertices[reads[i]->ID()] = ver;
+		map<unsigned int, Read*>::iterator it;
+		for (it = reads.begin(); it != reads.end(); it++) {
+			Vertex ver(it->second->read(), it->first);
+			vertices[it->first] = ver;
 		}
 		//stvaranje bridova
 		for (unsigned int j = 0; j < overlaps.size; j++) {
@@ -71,6 +70,5 @@ public:
 			edge_b.pair = edge_a.edgeId;
 		}
 	}
-
 
 };
