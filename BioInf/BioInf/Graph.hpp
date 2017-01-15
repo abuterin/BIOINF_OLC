@@ -9,6 +9,9 @@
 
 using namespace std;
 
+/**
+	Class created by Mirela
+
 class Graph {
 public:
 	map<unsigned int, Vertex> vertices;//Nodes

@@ -7,6 +7,9 @@
 #include "Read.hpp"
 using namespace std;
 
+/**
+	Class created by Mirela
+
 class Edge {
 public:
 	int edgeId;

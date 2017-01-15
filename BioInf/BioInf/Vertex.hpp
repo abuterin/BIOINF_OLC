@@ -9,6 +9,9 @@
 
 using namespace std;
 
+/**
+	Class created by Mirela
+
 class Vertex {
 public:
 	string readString; //oèitanje, reads

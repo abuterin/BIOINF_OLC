@@ -4,6 +4,9 @@
 
 using namespace std;
 
+/**
+	Class created by Ante
+*/
 class Read {
 private:
 	string _read;
