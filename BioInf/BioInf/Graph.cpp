@@ -1,4 +1,4 @@
-#include "Graph.hpp"
+/*#include "Graph.hpp"
 
 Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 	//stvaranje èvorova
@@ -134,4 +134,4 @@ void Graph::simplify() {
 		if (trim()) graphChanges = true;
 		if (bubbles()) graphChanges = true;
 	}
-}
+}*/

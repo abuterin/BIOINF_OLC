@@ -1,4 +1,4 @@
-#include "Vertex.hpp"
+/*#include "Vertex.hpp"
 
 void Vertex::addEdge(Edge _edge) {
 	bool using_suffix = _edge.overlap->isUsingSuffix(this->readID);
@@ -22,4 +22,4 @@ bool Vertex::isBubbleRootCandidate(bool direction) {
 		return true;
 	}
 	return false;
-}
+}*/

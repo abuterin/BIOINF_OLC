@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 #include <iostream>
 #include <vector>
 #include <map>
@@ -21,4 +21,4 @@ public:
 	void addEdge(Edge _edge);
 	bool isTipCandidate();
 	bool isBubbleRootCandidate(bool direction);
-};
+};*/

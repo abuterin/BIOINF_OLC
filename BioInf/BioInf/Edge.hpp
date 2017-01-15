@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 #include <iostream>
 #include <vector>
 #include <map>
@@ -18,4 +18,4 @@ public:
 		cout << "Constructor called." << endl;
 	}
 	unsigned int opposite(unsigned int vertexID);
-};
+};*/

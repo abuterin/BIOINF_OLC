@@ -1,4 +1,4 @@
-﻿#pragma once
+﻿/*#pragma once
 #include <iostream>
 #include <vector>
 #include <map>
@@ -24,4 +24,4 @@ public:
 	bool bubbles();
 
 	void simplify();
-};
+};*/

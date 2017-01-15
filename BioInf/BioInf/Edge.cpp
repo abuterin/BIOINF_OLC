@@ -1,4 +1,4 @@
-#include "Edge.hpp"
+/*#include "Edge.hpp"
 
 unsigned int Edge::opposite(unsigned int vertexID) {
 	if (overlap->aID() == vertexID) {
@@ -7,4 +7,4 @@ unsigned int Edge::opposite(unsigned int vertexID) {
 	else if (overlap->bID() == vertexID) {
 		return overlap->aID();
 	}
-}
+}*/
