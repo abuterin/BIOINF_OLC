@@ -54,3 +54,7 @@ bool MHAPOverlap::isUsingSuffix(unsigned int readID) {
 	}
 	return false;
 }
+
+bool MHAPOverlap::isInnie() {
+	return _aForward == !_bForward; //if A and B directions are opposite
+}
