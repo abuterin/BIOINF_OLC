@@ -60,6 +60,13 @@ public:
 
 	unsigned int overlapLength() { return _overlapLength; }
 
+	unsigned int getLength(unsigned id) {
+		if (id == this->aID())
+			return aLength();
+		else
+			return bLength();
+	}
+
 	friend std::ostream& operator<<(std::ostream& output, MHAPOverlap o) {
 		output << o._aID << " " << o._bID << " " << o._jaccardScore << " " << o._sharedMinMers << " " << (o._aForward ? 0 : 1) << " "
 			<<o._aStart << " " << o._aEnd << " " << o._aLength << " " << (o._bForward ? 0 : 1) << " " << o._bStart << " " << o._bEnd
