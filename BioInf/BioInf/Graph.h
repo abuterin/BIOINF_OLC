@@ -53,6 +53,15 @@ public:
 			return true;
 		return false;
 	}
+	bool isBubbleRootCandidate(bool direction) {
+		if (direction == true && edges_b.size() > 1) {//direction == B
+			return true;
+		}
+		if (direction == false && edges_e.size() > 1) {//direction == E
+			return true;
+		}
+		return false;
+	}
 };
 
 class Graph {
@@ -92,7 +101,7 @@ public:
 		}
 	}
 
-	bool trim() {//ako je došlo do promjena vrati true
+	bool trim() {	//as defined in (Vaser, 2015), page 23s
 		vector<unsigned int> markedVertices;//razlikujemo ih po readID
 		bool changes = false;//nismo još obrisali nijedan čvor
 
@@ -149,17 +158,47 @@ public:
 	
 	}
 
-	bool popBubbles() {
-		//ako je došlo do promjena vrati true
+	void findBubbles(Vertex startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
+		vector<unsigned int> walks;
+		vector<int> endsIn; //endsIn[i] num of paths ending in x
+		vector<Edge> _edges;
+		if (direction) {//direction == B
+			_edges = startNode.edges_b;
+		}else
+		{
+			_edges = startNode.edges_e;
+		}
+		walks.push_back(Walk(startNode));
+		for (int i = 0; i < MAX_STEPS; i++) {
+			int deadWalks = 0; //counter
+			int walksSize = walks.size();
+			if (walksSize > MAX_WALKS) {
+				break;
+			}
+			for (int j = 0; j < walksSize; j++) {
+
+			}
+		}
+	}
+
+	bool bubbles() {	//ako je došlo do promjena vrati true
+		//detect node with more than one outgoing edge
+		map<unsigned int, Vertex>::iterator it;
+		for (it = vertices.begin(); it != vertices.end(); it++) {
+			if ((it->second).isBubbleRootCandidate(true)) {//direction==B
+				findBubbles(it->second, true, MAX_STEPS);
+			}
+
+		}
+		
 	}
 	void simplify() {
 		bool graphChanges = true;
 		while (graphChanges)
 		{
 			graphChanges = false;
-			//if (removeNodesWithNoEdges()) graphChanges = true;
 			if (trim()) graphChanges = true;
-			if (popBubbles()) graphChanges = true;
+			if (bubbles()) graphChanges = true;
 		}
 	}
 };
