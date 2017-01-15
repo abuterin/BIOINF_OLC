@@ -20,14 +20,7 @@ public:
 		overlap = _overlap;
 		sourceNode = _sourceNode;
 	}
-	unsigned int opposite(unsigned int vertexID) {
-		if (overlap->aID() == vertexID) {
-			return overlap->bID();
-		}
-		else if (overlap->bID() == vertexID) {
-			return overlap->aID();
-		}
-	}
+	unsigned int opposite(unsigned int vertexID);
 };
 
 class Vertex {
