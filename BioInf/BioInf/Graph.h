@@ -11,7 +11,9 @@ int NOT_FOUND = -1;
 int NOT_DEFINED = -1;
 
 using namespace std;
-
+/**
+Class created by Mirela
+*/
 class Edge {
 public:
 	int edgeId;
@@ -41,7 +43,9 @@ public:
 		return overlap->aID();
 	}
 };
-
+/**
+Class created by Mirela
+*/
 class Vertex {
 public:	
 	string readString; //očitanje, reads
@@ -90,7 +94,9 @@ public:
 		return bestEdge.edgeId;
 	}
 };
-
+/**
+Class created by Mirela
+*/
 class Graph {
 public:
 	map<unsigned int, Vertex> vertices;//Nodes
@@ -161,14 +167,14 @@ public:
 				for (int i = 0; i < _edges.size(); i++) {
 					//check if the opposing vertex has a similar edge
 					unsigned int overtexId = _edges[i].opposite(it->first);//opposite vertex ID
-					Vertex overtex = this->getVertexById(overtexId);
-					vector<Edge> oedges = _edges[i].overlap->part(overtexId) == true ? overtex.edges_b : overtex.edges_e;
+					Vertex* overtex = this->getVertexById(overtexId);
+					vector<Edge> oedges = _edges[i].overlap->part(overtexId) == true ? overtex->edges_b : overtex->edges_e;
 					bool isTip = false;
 					for (int j = 0; j < oedges.size(); j++) {
 						//vertex is a tip only if the vertex on the similar edge is not
 						unsigned int oppID = oedges[j].opposite(overtexId);
-						Vertex oppVertex = this->getVertexById(oppID);
-						if (!oppVertex.isTipCandidate()) {
+						Vertex* oppVertex = this->getVertexById(oppID);
+						if (!oppVertex->isTipCandidate()) {
 							isTip = true;
 							break;
 						}
@@ -237,25 +243,40 @@ public:
 		}
 	}
 
-	void extractingUnitigs() {
-		set<unsigned int> visitedNodes;
-		map<unsigned int, MHAPOverlap*> unitigs;//start read and overlaps.
+	map<unsigned int, vector<Edge*>> extractingUnitigs() {
+		vector<unsigned int> visitedNodes;
+		map<unsigned int, vector<Edge*>> unitigs;//<start read,overlaps>
 		
 		map<unsigned int, Vertex>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
-			unsigned int node = it->first;
-			std::set<unsigned int>::iterator itS;
-			itS = visitedNodes.find(it->first);
-			if (itS != visitedNodes.end) {//if node is already part of some known unitig
+			bool visited = false;
+			Vertex node = it->second;
+			for (int i = 0; i < visitedNodes.size(); i++) {
+				if (visitedNodes[i] == it->first) {
+					visited = true;
+					break;
+				}
+			}
+			if (visited) {//if node is already part of some known unitig
 				continue;
 			}
 			//if not, it starts buildinga new one
-			vector<Edge> _edges;
-			//getEdges();
+			vector<Edge*> dst_edges;
+			getEdges(&dst_edges, &visitedNodes, &node, 0);//direction_left
+			
+			//Reverse edges because we will return unitig going in other direction
+			for (int j = 0; j < dst_edges.size(); j++) {
+				Edge* pair = this->getEdgeById(dst_edges[j]->pair);
+				dst_edges[j] = pair;
+			}
+			getEdges(&dst_edges, &visitedNodes, &node, 1);//direction_right
+			unitigs[dst_edges[0]->sourceNode] = dst_edges;
 		}
+		return unitigs;
 	}
-	int getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection) {
-		int marked = 0;
+
+	void getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection) {
+		//int marked = 0;
 		int useSuffix = startDirection;
 		auto currentNode = startNode;
 		unsigned int currentNodeId;
@@ -263,7 +284,7 @@ public:
 		{
 			currentNodeId = currentNode->readID;
 			visitedNodes->push_back(currentNodeId);
-			marked++;
+			//marked++;
 			unsigned int edgeId = currentNode->bestEdge(useSuffix);
 			if (edgeId == -1) {
 				break;
@@ -287,6 +308,7 @@ public:
 			}
 			currentNode = nextNode;
 		}
-		return marked;
+		return;
+		//return marked;
 	}
 };
