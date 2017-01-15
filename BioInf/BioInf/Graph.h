@@ -6,6 +6,10 @@
 #include "MHAPOverlap.hpp"
 #include "Assembler.hpp"
 #include "Read.hpp"
+
+int NOT_FOUND = -1;
+int NOT_DEFINED = -1;
+
 using namespace std;
 
 class Edge {
@@ -28,6 +32,13 @@ public:
 		else if (overlap->bID() == vertexID) {
 			return overlap->aID();
 		}
+	}
+	unsigned int getDestinationNode() {
+		unsigned int dstNode;
+		if (overlap->aID() == sourceNode) {
+			return overlap->bID();
+		}
+		return overlap->aID();
 	}
 };
 
@@ -116,11 +127,11 @@ public:
 		return nullptr;
 	}
 
-	Vertex getVertexById(unsigned int vertexId) {
+	Vertex* getVertexById(unsigned int vertexId) {
 		map<unsigned int, Vertex>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
 			if (it->first == vertexId)
-				return it->second;
+				return &(it->second);
 		}
 	}
 
@@ -243,24 +254,39 @@ public:
 			//getEdges();
 		}
 	}
-	void getEdges(vector<Edge>* edges, set<unsigned int>* visitedNodes, Vertex* startNode, bool startDirection) {
+	int getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection) {
 		int marked = 0;
-		bool useSuffix = startDirection;
+		int useSuffix = startDirection;
 		auto currentNode = startNode;
 		unsigned int currentNodeId;
 		while (true)
 		{
 			currentNodeId = currentNode->readID;
-			visitedNodes->insert(currentNodeId);
+			visitedNodes->push_back(currentNodeId);
 			marked++;
 			unsigned int edgeId = currentNode->bestEdge(useSuffix);
 			if (edgeId == -1) {
-				continue;
+				break;
 			}
 			Edge* edge = this->getEdgeById(edgeId);
-			if(edge->overlap->)
+			if (edge->overlap->isInnie()) {//change direction if overlap is SS or PP
+				useSuffix = 1 - useSuffix;
+			}
+			unsigned int nextNodeId = edge->getDestinationNode();
+			Vertex* nextNode = this->getVertexById(nextNodeId);
+			unsigned int nextBestEdgeId = nextNode->bestEdge(1 - useSuffix);
+			Edge* nextBestEdge = this->getEdgeById(nextBestEdgeId);
+			// if curr and next do not share best overlap
+			if (nextBestEdge->overlap != edge->overlap) {
+				break;
+			}
+			dst_edges->push_back(const_cast<Edge*>(edge));
+			// if read is already part of some other unitig
+			if (visitedNodes->at(nextNodeId) != NOT_DEFINED) {
+				break;
+			}
+			currentNode = nextNode;
 		}
-
-
+		return marked;
 	}
 };
