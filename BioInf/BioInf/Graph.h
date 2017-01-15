@@ -141,6 +141,8 @@ public:
 		}
 	}
 
+	bool removeNodesWithNoEdges();
+
 	bool trim() {	//as defined in (Vaser, 2015), page 23s
 		vector<unsigned int> markedVertices;//razlikujemo ih po readID
 		bool changes = false;//nismo još obrisali nijedan čvor
@@ -238,8 +240,15 @@ public:
 		while (graphChanges)
 		{
 			graphChanges = false;
-			if (trim()) graphChanges = true;
-			if (bubbles()) graphChanges = true;
+			if (removeNodesWithNoEdges()) {
+				graphChanges = true;
+			}
+			if (trim()) {
+				graphChanges = true;
+			}
+			if (bubbles()) {
+				graphChanges = true;
+			}
 		}
 	}
 

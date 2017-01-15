@@ -1,5 +1,7 @@
-/*#include "Graph.hpp"
+#include "Graph.h"
 
+
+/*
 Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 	//stvaranje èvorova
 	map<unsigned int, Read*>::iterator it;
@@ -135,3 +137,21 @@ void Graph::simplify() {
 		if (bubbles()) graphChanges = true;
 	}
 }*/
+
+bool Graph::removeNodesWithNoEdges() {
+	bool change = false;
+	vector<unsigned int> marked;		//vertices marked for deletion
+	for (map<unsigned int, Vertex>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+		if (it->second.edges_b.empty() && it->second.edges_e.empty()) {
+			marked.push_back(it->first);
+		}
+	}
+
+	if (!marked.empty()) {
+		change = true;
+		for (size_t i = 0; i < marked.size(); i++) {
+			vertices.erase(marked[i]);
+		}
+	}
+	return change;
+}
