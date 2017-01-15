@@ -66,6 +66,9 @@ public:
 		else
 			return bLength();
 	}
+	bool isInnie() {
+		//true if overlap is SS or PP
+	}
 
 	friend std::ostream& operator<<(std::ostream& output, MHAPOverlap o) {
 		output << o._aID << " " << o._bID << " " << o._jaccardScore << " " << o._sharedMinMers << " " << (o._aForward ? 0 : 1) << " "
