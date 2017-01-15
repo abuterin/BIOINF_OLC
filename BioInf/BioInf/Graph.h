@@ -141,7 +141,6 @@ public:
 		}
 	}
 
-	bool removeNodesWithNoEdges();
 
 	bool trim() {	//as defined in (Vaser, 2015), page 23s
 		vector<unsigned int> markedVertices;//razlikujemo ih po readID
@@ -240,9 +239,6 @@ public:
 		while (graphChanges)
 		{
 			graphChanges = false;
-			if (removeNodesWithNoEdges()) {
-				graphChanges = true;
-			}
 			if (trim()) {
 				graphChanges = true;
 			}
