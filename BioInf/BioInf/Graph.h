@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 #include "MHAPOverlap.hpp"
 #include "Assembler.hpp"
 #include "Read.hpp"
@@ -49,8 +50,7 @@ public:
 			edges_b.push_back(_edge);
 	}
 	bool isTipCandidate() {
-		if (edges_b.size() == 0 || edges_e.size() == 0)
-			return true;
+		if (edges_b.size() == 0 || edges_e.size() == 0)	return true;
 		return false;
 	}
 	bool isBubbleRootCandidate(bool direction) {
@@ -61,6 +61,22 @@ public:
 			return true;
 		}
 		return false;
+	}
+	unsigned int bestEdge(bool useEnd) { //bool useSuffix = startDirection;
+		auto edges = useEnd ? edges_e : edges_b;
+		if (edges.size() == 0) {
+			return -1;//edge id koji ne postoji
+		}
+		Edge bestEdge = edges.front();//prvi element u vektoru
+		int bestLength = bestEdge.overlap->getLength(readID);//dužina očitanja u preklapanju
+		for (int i = 1; i < edges.size(); i++) {
+			int currLength = edges[i].overlap->getLength(readID);
+			if (currLength > bestLength) {
+				bestEdge = edges[i];
+				bestLength = currLength;
+			}
+		}
+		return bestEdge.edgeId;
 	}
 };
 
@@ -91,6 +107,13 @@ public:
 			edge_a.pair = edge_b.edgeId;
 			edge_b.pair = edge_a.edgeId;
 		}
+	}
+	Edge* getEdgeById(unsigned int ID) {
+		for (int i = 0; i < edges.size(); i++) {
+			if (edges[i].edgeId == ID)
+				return &edges[i];
+		}
+		return nullptr;
 	}
 
 	Vertex getVertexById(unsigned int vertexId) {
@@ -192,6 +215,7 @@ public:
 		}
 		
 	}
+	
 	void simplify() {
 		bool graphChanges = true;
 		while (graphChanges)
@@ -200,5 +224,43 @@ public:
 			if (trim()) graphChanges = true;
 			if (bubbles()) graphChanges = true;
 		}
+	}
+
+	void extractingUnitigs() {
+		set<unsigned int> visitedNodes;
+		map<unsigned int, MHAPOverlap*> unitigs;//start read and overlaps.
+		
+		map<unsigned int, Vertex>::iterator it;
+		for (it = vertices.begin(); it != vertices.end(); it++) {
+			unsigned int node = it->first;
+			std::set<unsigned int>::iterator itS;
+			itS = visitedNodes.find(it->first);
+			if (itS != visitedNodes.end) {//if node is already part of some known unitig
+				continue;
+			}
+			//if not, it starts buildinga new one
+			vector<Edge> _edges;
+			//getEdges();
+		}
+	}
+	void getEdges(vector<Edge>* edges, set<unsigned int>* visitedNodes, Vertex* startNode, bool startDirection) {
+		int marked = 0;
+		bool useSuffix = startDirection;
+		auto currentNode = startNode;
+		unsigned int currentNodeId;
+		while (true)
+		{
+			currentNodeId = currentNode->readID;
+			visitedNodes->insert(currentNodeId);
+			marked++;
+			unsigned int edgeId = currentNode->bestEdge(useSuffix);
+			if (edgeId == -1) {
+				continue;
+			}
+			Edge* edge = this->getEdgeById(edgeId);
+			if(edge->overlap->)
+		}
+
+
 	}
 };
