@@ -50,15 +50,15 @@ class Vertex {
 public:	
 	string readString; //očitanje, reads
 	unsigned int readID; 
-	vector<Edge> edges_b; //preklapanja koja koriste početak očitanja
-	vector<Edge> edges_e; //preklapanja koja koriste kraj očitanja
+	vector<Edge*> edges_b; //preklapanja koja koriste početak očitanja
+	vector<Edge*> edges_e; //preklapanja koja koriste kraj očitanja
 
 	Vertex(string _read, unsigned int _readID){
 		readString = _read;
 		readID = _readID;
 	}
-	void addEdge(Edge _edge) {
-		bool using_suffix = _edge.overlap->isUsingSuffix(this->readID);
+	void addEdge(Edge* _edge) {
+		bool using_suffix = _edge->overlap->isUsingSuffix(this->readID);
 		if (using_suffix)
 			edges_e.push_back(_edge);//bridovi koji koriste readov kraj
 		else
@@ -82,16 +82,16 @@ public:
 		if (edges.size() == 0) {
 			return -1;//edge id koji ne postoji
 		}
-		Edge bestEdge = edges.front();//prvi element u vektoru
-		int bestLength = bestEdge.overlap->getLength(readID);//dužina očitanja u preklapanju
+		Edge* bestEdge = edges.front();//prvi element u vektoru
+		int bestLength = bestEdge->overlap->getLength(readID);//dužina očitanja u preklapanju
 		for (int i = 1; i < edges.size(); i++) {
-			int currLength = edges[i].overlap->getLength(readID);
+			int currLength = edges[i]->overlap->getLength(readID);
 			if (currLength > bestLength) {
 				bestEdge = edges[i];
 				bestLength = currLength;
 			}
 		}
-		return bestEdge.edgeId;
+		return bestEdge->edgeId;
 	}
 };
 /**
@@ -99,45 +99,45 @@ Class created by Mirela
 */
 class Graph {
 public:
-	map<unsigned int, Vertex> vertices;//Nodes
-	vector<Edge> edges;
+	map<unsigned int, Vertex*> vertices;//Nodes
+	vector<Edge*> edges;
 	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 		//stvaranje čvorova
 		map<unsigned int, Read*>::iterator it;
 		for (it = reads.begin(); it != reads.end(); it++) {
-			Vertex ver(it->second->read(), it->first);
+			Vertex* ver = new Vertex(it->second->read(), it->first);
 			vertices[it->first] = ver;
 		}
 		//stvaranje bridova
 		for (unsigned int j = 0; j < overlaps.size(); j++) {
 			MHAPOverlap* ovp = overlaps[j];
 
-			Edge edge_a(edges.size(), ovp, ovp->aID());
+			Edge* edge_a = new Edge(edges.size(), ovp, ovp->aID());
 			edges.push_back(edge_a);
 
-			Edge edge_b(edges.size(), ovp, ovp->bID());
+			Edge* edge_b = new Edge(edges.size(), ovp, ovp->bID());
 			edges.push_back(edge_b);
 
-			vertices[ovp->aID()].addEdge(edge_b);
-			vertices[ovp->bID()].addEdge(edge_a);
+			vertices[ovp->aID()]->addEdge(edge_b);
+			vertices[ovp->bID()]->addEdge(edge_a);
 			
-			edge_a.pair = edge_b.edgeId;
-			edge_b.pair = edge_a.edgeId;
+			edge_a->pair = edge_b->edgeId;
+			edge_b->pair = edge_a->edgeId;
 		}
 	}
 	Edge* getEdgeById(unsigned int ID) {
 		for (int i = 0; i < edges.size(); i++) {
-			if (edges[i].edgeId == ID)
-				return &edges[i];
+			if (edges[i]->edgeId == ID)
+				return edges[i];
 		}
 		return nullptr;
 	}
 
 	Vertex* getVertexById(unsigned int vertexId) {
-		map<unsigned int, Vertex>::iterator it;
+		map<unsigned int, Vertex*>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
 			if (it->first == vertexId)
-				return &(it->second);
+				return (it->second);
 		}
 	}
 
@@ -146,11 +146,11 @@ public:
 		vector<unsigned int> markedVertices;//razlikujemo ih po readID
 		bool changes = false;//nismo još obrisali nijedan čvor
 
-		map<unsigned int, Vertex>::iterator it;
+		map<unsigned int, Vertex*>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
 			//it->first == IdRead, it->second == vertex
-			int sizeEdges_b = (it->second).edges_b.size();
-			int sizeEdges_e = (it->second).edges_e.size();
+			int sizeEdges_b = (it->second)->edges_b.size();
+			int sizeEdges_e = (it->second)->edges_e.size();
 			//removingNodesWithNoEdges
 			if ( sizeEdges_b==0 && sizeEdges_e==0 ) { 
 				markedVertices.push_back(it->first);
@@ -158,22 +158,22 @@ public:
 			}
 			//removingTrims
 			if (sizeEdges_b == 0 || sizeEdges_e == 0) {
-				vector<Edge> _edges;
+				vector<Edge*> _edges;
 				if (sizeEdges_b == 0 && sizeEdges_e != 0) {
-					_edges = (it->second).edges_e;
+					_edges = (it->second)->edges_e;
 				}
 				if (sizeEdges_b != 0 && sizeEdges_e == 0) {
-					_edges = (it->second).edges_b;
+					_edges = (it->second)->edges_b;
 				}
 				for (int i = 0; i < _edges.size(); i++) {
 					//check if the opposing vertex has a similar edge
-					unsigned int overtexId = _edges[i].opposite(it->first);//opposite vertex ID
+					unsigned int overtexId = _edges[i]->opposite(it->first);//opposite vertex ID
 					Vertex* overtex = this->getVertexById(overtexId);
-					vector<Edge> oedges = _edges[i].overlap->part(overtexId) == true ? overtex->edges_b : overtex->edges_e;
+					vector<Edge*> oedges = _edges[i]->overlap->part(overtexId) == true ? overtex->edges_b : overtex->edges_e;
 					bool isTip = false;
 					for (int j = 0; j < oedges.size(); j++) {
 						//vertex is a tip only if the vertex on the similar edge is not
-						unsigned int oppID = oedges[j].opposite(overtexId);
+						unsigned int oppID = oedges[j]->opposite(overtexId);
 						Vertex* oppVertex = this->getVertexById(oppID);
 						if (!oppVertex->isTipCandidate()) {
 							isTip = true;
@@ -199,15 +199,15 @@ public:
 	
 	}
 
-	void findBubbles(Vertex startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
+	void findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
 		vector<unsigned int> walks;
 		vector<int> endsIn; //endsIn[i] num of paths ending in x
-		vector<Edge> _edges;
+		vector<Edge*> _edges;
 		if (direction) {//direction == B
-			_edges = startNode.edges_b;
+			_edges = startNode->edges_b;
 		}else
 		{
-			_edges = startNode.edges_e;
+			_edges = startNode->edges_e;
 		}
 		walks.push_back(Walk(startNode));
 		for (int i = 0; i < MAX_STEPS; i++) {
@@ -224,9 +224,9 @@ public:
 
 	bool bubbles() {	//ako je došlo do promjena vrati true
 		//detect node with more than one outgoing edge
-		map<unsigned int, Vertex>::iterator it;
+		map<unsigned int, Vertex*>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
-			if ((it->second).isBubbleRootCandidate(true)) {//direction==B
+			if ((it->second)->isBubbleRootCandidate(true)) {//direction==B
 				findBubbles(it->second, true, MAX_STEPS);
 			}
 
@@ -252,10 +252,10 @@ public:
 		vector<unsigned int> visitedNodes;
 		map<unsigned int, vector<Edge*>> unitigs;//<start read,overlaps>
 		
-		map<unsigned int, Vertex>::iterator it;
+		map<unsigned int, Vertex*>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
 			bool visited = false;
-			Vertex node = it->second;
+			Vertex* node = it->second;
 			for (int i = 0; i < visitedNodes.size(); i++) {
 				if (visitedNodes[i] == it->first) {
 					visited = true;
@@ -267,14 +267,14 @@ public:
 			}
 			//if not, it starts buildinga new one
 			vector<Edge*> dst_edges;
-			getEdges(&dst_edges, &visitedNodes, &node, 0);//direction_left
+			getEdges(&dst_edges, &visitedNodes, node, 0);//direction_left
 			
 			//Reverse edges because we will return unitig going in other direction
 			for (int j = 0; j < dst_edges.size(); j++) {
 				Edge* pair = this->getEdgeById(dst_edges[j]->pair);
 				dst_edges[j] = pair;
 			}
-			getEdges(&dst_edges, &visitedNodes, &node, 1);//direction_right
+			getEdges(&dst_edges, &visitedNodes, node, 1);//direction_right
 			unitigs[dst_edges[0]->sourceNode] = dst_edges;
 		}
 		return unitigs;
