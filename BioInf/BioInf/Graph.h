@@ -22,9 +22,10 @@ public:
 	MHAPOverlap* overlap; 
 	unsigned int sourceNode;
 	unsigned int pairId;
+	Edge* _pair;
 	bool _inWalk;
 	//unsigned int destinationNode;
-	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) : _inWalk{ false } {
+	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) : _inWalk{ false }, _pair{ nullptr } {
 		cout << "Constructor called." << endl;
 		edgeId = _edgeId;
 		overlap = _overlap;
@@ -48,6 +49,8 @@ public:
 
 	bool isInWalk() { return _inWalk; }
 	void setInWalk(bool inWalk) { _inWalk = inWalk; }
+
+	Edge* pair() { return _pair; }
 };
 /**
 Class created by Mirela
@@ -129,7 +132,9 @@ public:
 			vertices[ovp->bID()]->addEdge(edge_a);
 			
 			edge_a->pairId = edge_b->edgeId;
+			edge_a->_pair = edge_b;
 			edge_b->pairId = edge_a->edgeId;
+			edge_b->_pair = edge_a;
 		}
 	}
 	Edge* getEdgeById(unsigned int ID) {
@@ -210,6 +215,8 @@ public:
 		vector<Walk*> walks;
 		vector<unsigned int, unsigned int> endsIn; //endsIn[i] num of paths ending in x
 		vector<Edge*> _edges;
+		unsigned int junctionID = NOT_FOUND;
+		unsigned int bubblesPopped = 0;
 
 		if (direction) {//direction == B
 			_edges = startNode->edges_b;
@@ -222,15 +229,15 @@ public:
 
 		for (size_t i = 0; i < MAX_STEPS; i++) {
 			unsigned int deadWalks = 0; //counter
-			unsigned int walksSize = walks.size();
+			unsigned int walksSize = walks.size();	
 
 			if (walksSize > MAX_WALKS) {
 				break;
 			}
 
-			for (size_t j = 0; j < walksSize; j++) {
+			for (size_t j = 0; j < walksSize && junctionID == NOT_FOUND; j++) {
 				Walk* walk = walks[j];
-				vector<Walk*> extendedWalks = walk->extend(direction, vertices);
+				vector<Walk*> extendedWalks = walk->extend(direction, this);
 
 				if (extendedWalks.empty()) {		//current walk is a dead end
 					deadWalks++;
@@ -246,21 +253,35 @@ public:
 				for (Walk* newWalk : extendedWalks) {
 					endsIn[newWalk->lastNode()->readID]++;	//update counter for walk ends
 					if (endsIn[newWalk->lastNode()->readID] == walks.size()) {
-						return walks;		//bubble found!
+						junctionID = newWalk->lastNode()->readID;
+						break;
 					}
 				}
 			}
-			if (deadWalks == walksSize) {
+
+			if (deadWalks == walksSize) {		//all walks are dead (inside hihihi)
 				break;
 			}
-		}
+
+			if (junctionID != NOT_FOUND) {
+				cout << "Bubble root: " << startNode->readID << "\nJunction node: " << junctionID << endl;
+
+				for (Walk* walk : walks) {
+					walk->rewindTo(junctionID, direction, this);
+				}
+				bubblesPopped += popBubble(walks, junctionID, direction);
+				break; //break from the first 'for' because junction has surely been found
+			}
+
+		}//end of: for (size_t i = 0; i < MAX_STEPS; i++) {
+
+		cout << "Bubbles popped: " << bubblesPopped << endl;
 
 		for (Walk* walk : walks) {
-			for (Vertex* vertex : walk->nodes()) {
-				vertex->setInWalk(false);
-			}
+			//ovo dovrsiti:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 			delete walk;
 		}
+
 		walks.clear();
 		return walks;
 	}
@@ -275,6 +296,18 @@ public:
 
 		}
 		
+	}
+
+	unsigned int popBubble(vector<Walk*> walks, unsigned int junctionID, bool direction) {
+		double bestCoverage = 0;
+		Walk* baseWalk;
+
+		for (Walk* walk : walks) {
+			if (walk->coverage(direction) > bestCoverage) {
+				bestCoverage = walk->coverage(direction);
+				baseWalk = walk;
+			}
+		}
 	}
 	
 	void simplify() {
