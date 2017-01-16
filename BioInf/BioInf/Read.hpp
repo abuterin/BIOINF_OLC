@@ -10,6 +10,7 @@ using namespace std;
 class Read {
 private:
 	string _read;
+	string _reverseComplement;
 	unsigned int _ID;
 
 public:
@@ -17,4 +18,6 @@ public:
 
 	string read() { return _read; }
 	unsigned int ID() { return _ID; }
+
+	string reverseComplement();
 };
