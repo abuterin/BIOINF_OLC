@@ -7,6 +7,9 @@
 #include "Assembler.hpp"
 #include "Read.hpp"
 
+#define ABS(x) ((x < 0) ? x * (-1) : x)
+#define MAX(x,y) ((x > y) ? x : y)
+
 int NOT_FOUND = -1;
 int NOT_DEFINED = -1;
 
@@ -315,5 +318,55 @@ public:
 		}
 		return;
 		//return marked;
+	}
+
+	void extractingContigs() {
+		vector<unsigned int> startCandidates;
+		startCandidates = findStartCandidates();
+	}
+	vector<unsigned int> findStartCandidates() {
+
+	}
+	void extractLongestWalk() {
+		typedef tuple<Vertex*, int, double> Candidate;
+		// pick n start vertices based on total coverage of their chains to first branch
+		vector<Candidate> startCandidates;
+		uint32_t maxId = 0;
+		for (auto& vertex : vertices) {
+			maxId = MAX(maxId, vertex.first);
+		}
+		// tips and singular chains could be good candidates
+		for (int direction = 0; direction <= 1; ++direction) {
+			for (auto& vertex : vertices) {
+				if ((direction == 0 && vertex.second->edges_b.size() == 1 && vertex.second->edges_e.size() == 0) ||
+					(direction == 1 && vertex.second->edges_b.size() == 1 && vertex.second->edges_e.size() == 0)) {
+					vector<bool> visited(maxId + 1, false);
+					startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
+						visited, 0));
+				}
+			}
+		}
+		// forks could be good candidates, too
+		for (int direction = 0; direction <= 1; ++direction) {
+			for (auto& vertex : vertices) {
+				if ((direction == 0 && vertex.second->edges_b.size() > 1) ||
+					(direction == 1 && vertex.second->edges_e.size() > 1)) {
+					vector<bool> visited(maxId + 1, false);
+					startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
+						visited, 1));
+				}
+			}
+		}
+		// circular component
+		if (startCandidates.size() == 0) {
+			vector<bool> visited(maxId + 1, false);
+
+			int direction = 0;
+			auto vertex = vertices.begin;
+			startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
+				visited, 1));
+		}
+
+
 	}
 };
