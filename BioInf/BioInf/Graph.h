@@ -9,6 +9,8 @@
 #include "Walk.hpp"
 #include <time.h>
 
+class Walk;
+
 int MAX_NODES = 160;
 int MAX_DISTANCE = MAX_NODES * 10000;
 double MAX_DIFFERENCE = 0.25;
@@ -28,9 +30,11 @@ public:
 	int edgeId;
 	MHAPOverlap* overlap; 
 	unsigned int sourceNode;
-	int pair;
+	unsigned int pairId;
+	Edge* _pair;
+	bool _inWalk;
 	//unsigned int destinationNode;
-	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) {
+	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) : _inWalk{ false }, _pair{ nullptr } {
 		cout << "Constructor called." << endl;
 		edgeId = _edgeId;
 		overlap = _overlap;
@@ -55,6 +59,10 @@ public:
 		return overlap;
 	}
 
+	bool isInWalk() { return _inWalk; }
+	void setInWalk(bool inWalk) { _inWalk = inWalk; }
+
+	Edge* pair() { return _pair; }
 };
 /**
 Class created by Mirela
@@ -123,6 +131,16 @@ public:
 		}
 		return bestEdge->edgeId;
 	}
+
+	bool isBeginEdge(Edge* e) {
+		if (e == nullptr) {
+			return false;
+		}
+		if (e->overlap->isUsingSuffix(readID)) {
+			return false;
+		}
+		return true;
+	}
 };
 /**
 Class created by Mirela
@@ -157,8 +175,8 @@ public:
 			vertices[ovp->aID()]->addEdge(edge_b);
 			vertices[ovp->bID()]->addEdge(edge_a);
 			
-			edge_a->pair = edge_b->edgeId;
-			edge_b->pair = edge_a->edgeId;
+			edge_a->pairId = edge_b->edgeId;
+			edge_b->pairId = edge_a->edgeId;
 		}
 		
 	}
@@ -241,33 +259,85 @@ public:
 		return changes;
 	
 	}
-	/**
-	void findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
+
+	vector<Walk*> findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
 		vector<Walk*> walks;
-		vector<unsigned int> endsIn; //endsIn[i] num of paths ending in x
+		vector<unsigned int, unsigned int> endsIn; //endsIn[i] num of paths ending in x
 		vector<Edge*> _edges;
+		unsigned int junctionID = NOT_FOUND;
+		unsigned int bubblesPopped = 0;
+
 		if (direction) {//direction == B
 			_edges = startNode->edges_b;
-		}else
+		}
+		else
 		{
 			_edges = startNode->edges_e;
 		}
+
 		walks.push_back(new Walk(startNode));
-		for (int i = 0; i < MAX_STEPS; i++) {
+
+		for (size_t i = 0; i < MAX_STEPS; i++) {
 			unsigned int deadWalks = 0; //counter
-			int walksSize = walks.size();
+			unsigned int walksSize = walks.size();
+
 			if (walksSize > MAX_WALKS) {
 				break;
 			}
-			for (int j = 0; j < walksSize; j++) {
-				Walk* walk = walks[j];
 
+			for (size_t j = 0; j < walksSize && junctionID == NOT_FOUND; j++) {
+				Walk* walk = walks[j];
+				vector<Walk*> extendedWalks = walk->extend(direction, this);
+
+				if (extendedWalks.empty()) {		//current walk is a dead end
+					deadWalks++;
+					continue;
+				}
+
+				walk = extendedWalks.back();		//replace old walk with the extended one (which is at the end)
+
+				for (size_t k = 0; k < extendedWalks.size() - 1; k++) {
+					walks.push_back(extendedWalks[k]);	//add all new forked walks to the list
+				}
+
+				for (Walk* newWalk : extendedWalks) {
+					endsIn[newWalk->lastNode()->readID]++;	//update counter for walk ends
+					if (endsIn[newWalk->lastNode()->readID] == walks.size()) {
+						junctionID = newWalk->lastNode()->readID;
+						break;
+					}
+				}
 			}
+
+			if (deadWalks == walksSize) {		//all walks are dead (inside hihihi)
+				break;
+			}
+
+			if (junctionID != NOT_FOUND) {
+				cout << "Bubble root: " << startNode->readID << "\nJunction node: " << junctionID << endl;
+
+				for (Walk* walk : walks) {
+					walk->rewindTo(junctionID);
+				}
+				bubblesPopped += popBubble(walks, junctionID, direction);
+				break; //break from the first 'for' because junction has surely been found
+			}
+
+		}//end of: for (size_t i = 0; i < MAX_STEPS; i++) {
+
+		cout << "Bubbles popped: " << bubblesPopped << endl;
+
+		for (Walk* walk : walks) {
+			//ovo dovrsiti:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+			delete walk;
 		}
+
+		walks.clear();
+		return walks;
 	}
 
 	bool bubbles() {	//ako je došlo do promjena vrati true
-		//detect node with more than one outgoing edge
+						//detect node with more than one outgoing edge
 		map<unsigned int, Vertex*>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
 			if ((it->second)->isBubbleRootCandidate(true)) {//direction==B
@@ -275,9 +345,61 @@ public:
 			}
 
 		}
-		
+
 	}
-	*/
+
+	unsigned int popBubble(vector<Walk*> walks, unsigned int junctionID, bool direction) {
+		double bestCoverage = 0;
+		Walk* baseWalk;
+		map<unsigned int, unsigned int> edgeUsed; //number of walks using certain edge
+
+		for (Walk* walk : walks) {
+			for (Edge* e : walk->pathEdges()) {
+				edgeUsed[e->edgeId]++;
+			}
+		}
+
+		auto countExternalEdges = [&edgeUsed](Vertex* v, Edge* incomingEdge) -> int {
+			int externalEdges = 0;
+
+			vector<Edge*> vEdges = v->isBeginEdge(incomingEdge) ? v->edges_b : v->edges_e;
+			for (Edge* edge : vEdges) {
+				if (edgeUsed.count(edge->edgeId) == 0) {
+					externalEdges++;
+				}
+			}
+
+			return externalEdges;
+		};
+
+		for (Walk* walk : walks) {
+			int externalEdgesBefore = 0;
+
+			for (Edge* edge : walk->pathEdges()) {
+				if (edge->isInWalk()) {
+					continue;
+				}
+			}
+		}
+
+		for (Walk* walk : walks) {
+			/*
+			double errate = 0;
+			double coverage = 0;
+
+			for (Edge* edge : walk->pathEdges()) {
+			errate += edge->overlap->jaccardScore();
+			coverage += 1;
+
+			coverage -= edge->overlap->coveredPercentageReadA();
+			coverage -= edge->overlap->coveredPercentageReadB();
+			}*/
+			if (walk->coverage(direction) > bestCoverage) {
+				bestCoverage = walk->coverage(direction);
+				baseWalk = walk;
+			}
+		}
+	}
 	
 	/*!
 	* @brief Method for graph simplification
@@ -348,8 +470,8 @@ public:
 			
 			//Reverse edges because we will return unitig going in other direction
 			for (int j = 0; j < dst_edges.size(); j++) {
-				Edge* pair = this->getEdgeById(dst_edges[j]->pair);
-				dst_edges[j] = pair;
+				Edge* pairId = this->getEdgeById(dst_edges[j]->pairId);
+				dst_edges[j] = pairId;
 			}
 			getEdges(&dst_edges, &visitedNodes, node, 1);//direction_right
 			unitigs[dst_edges[0]->sourceNode] = dst_edges;
