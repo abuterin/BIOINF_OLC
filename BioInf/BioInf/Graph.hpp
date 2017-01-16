@@ -54,7 +54,5 @@ public:
 
 	void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection);
 
-	void Graph::extractLongestWalk();
-
-	void Graph::extractComponents(vector<StringGraphComponent*>& dst)
+	void Graph::extractComponents(vector<StringGraphComponent*>& dst);
 };

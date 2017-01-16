@@ -26,6 +26,9 @@ public:
 	uint32_t getId() {
 		return readID;
 	}
+	int getLength() {
+		return readString.size();
+	}
 
 	list<Edge*>& getEdgesB();
 
