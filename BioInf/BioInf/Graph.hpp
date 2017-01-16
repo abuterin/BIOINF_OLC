@@ -28,9 +28,17 @@ class Graph {
 public:
 	map<unsigned int, Vertex*> vertices;//Nodes 
 	vector<Edge*> edges;
-	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps);
+	Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps);
 	
 	~Graph();
+	
+	Vertex* getVertex(int id) {
+		if (!vertices.count(id)) {
+			return nullptr;
+		}
+
+		return vertices.at(id);
+	}
 
 	Edge* getEdgeById(unsigned int ID);
 
@@ -55,4 +63,5 @@ public:
 	void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection);
 
 	void Graph::extractComponents(vector<StringGraphComponent*>& dst);
+
 };

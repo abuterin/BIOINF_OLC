@@ -36,7 +36,7 @@ static int expandVertex(std::vector<Edge*>& dst, Vertex* start, int start_direct
 		Edge* best_edge = nullptr;
 		if (edges.size() == 1) {
 
-			if (!visitedVertices[edges.front()->getDestinationNode()]) {
+			if (!visitedVertices[edges.front()->destinationId]) {
 				best_edge = edges.front();
 			}
 

@@ -1,6 +1,6 @@
 ﻿#include "Graph.hpp"
 
-Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
+Graph::Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps) {
 
 	//stvaranje čvorova
 	map<unsigned int, Read*>::iterator it;
@@ -10,12 +10,13 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 	}
 	//stvaranje bridova
 	for (unsigned int j = 0; j < overlaps.size(); j++) {
-		MHAPOverlap* ovp = overlaps[j];
-
-		Edge* edge_a = new Edge(edges.size(), ovp, ovp->aID());
+		DovetailOverlap* ovp = overlaps[j];
+		//Edge(int _edgeId, MHAPOverlap* _overlap, Vertex* src, Vertex* dst)
+		
+		Edge* edge_a = new Edge(edges.size(), ovp, ovp->aID(), this);
 		edges.push_back(edge_a);
 
-		Edge* edge_b = new Edge(edges.size(), ovp, ovp->bID());
+		Edge* edge_b = new Edge(edges.size(), ovp, ovp->bID(), this);
 		edges.push_back(edge_b);
 
 		vertices[ovp->aID()]->addEdge(edge_b);
@@ -24,7 +25,8 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 		edge_a->pairId = edge_b->edgeId;
 		edge_b->pairId = edge_a->edgeId;
 	}
-
+	//Edge(uint32_t id, uint32_t readId, Overlap* overlap, StringGraph* graph);
+	//Edge(edges_.size(), overlap->a(), overlap, this);
 }
 Graph::~Graph() {
 	for (auto& vertex : vertices) delete vertex.second;
