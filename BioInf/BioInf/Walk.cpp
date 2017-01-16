@@ -155,5 +155,20 @@ void Walk::extractSequence(string &dest) {
 
 	bool appendToPrefix = (!_pathEdges.front()->overlap->isUsingSuffix(_nodes.front()->readID)) ^ startType;
 
+	string startSequence = string(startType ? _nodes.front()->getReverseComplement() : _nodes.front()->readString);
 
+	dest = appendToPrefix ? string(startSequence.rbegin(), startSequence.rend()) : startSequence;
+
+	int prevType = startType;
+
+	for (Edge* e : _pathEdges) {
+		int type = getType(e, e->sourceNode);
+
+		bool invert = type == prevType ? false : true;
+
+		string label;
+		if (invert) {
+			//ovdje stao:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::.
+		}
+	}
 }
