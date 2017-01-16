@@ -160,7 +160,7 @@ static int longest_sequence_length(Vertex* from, int direction, std::vector<bool
 
 double overlap_score(MHAPOverlap* overlap) {
 	double quality = 1 - overlap->err_rate();
-	return (overlap->covered_percentage(overlap->a()) + overlap->covered_percentage(overlap->b())) * quality;
+	return (overlap->covered_percentage(overlap->aID()) + overlap->covered_percentage(overlap->b())) * quality;
 };
 
 static int findSingularChain(std::vector<Edge*>* dst, Vertex* start, int start_direction) {

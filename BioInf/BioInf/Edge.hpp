@@ -28,6 +28,8 @@ public:
 
 	unsigned int getDestinationNode();
 
+	Vertex* getDst() {  }//dovrsiti:::::::::::::::::::::::::::::::::::.
+
 	MHAPOverlap* getOverlap() {
 		return overlap;
 	}

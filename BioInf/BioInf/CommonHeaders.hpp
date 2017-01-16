@@ -12,15 +12,15 @@
 #include <string>
 #include <set>
 
-#include "Assembler.hpp"
-#include "DovetailOverlap.hpp"
-#include "Edge.hpp"
-#include "Graph.hpp"
-#include "MHAPOverlap.hpp"
 #include "Read.hpp"
+#include "MHAPOverlap.hpp"
+#include "DovetailOverlap.hpp"
+#include "Assembler.hpp"
+#include "Edge.hpp"
+#include "Vertex.hpp"
+#include "Graph.hpp"
 #include "StringGraphWalk.hpp"
 #include "StringGraphComponent.hpp"
-#include "Vertex.hpp"
 #include "Utils.hpp"
 #include "Walk.hpp"
 

@@ -3,6 +3,7 @@
 
 using namespace std;
 
+class Edge;
 
 /**
 Class created by Mirela
@@ -11,6 +12,7 @@ class Vertex {
 public:
 	string readString; //ocitanje, reads
 	unsigned int readID;
+	Read* read;
 	vector<Edge*> edges_b; //preklapanja koja koriste početak očitanja
 	vector<Edge*> edges_e; //preklapanja koja koriste kraj očitanja
 
@@ -37,4 +39,6 @@ public:
 
 
 	bool isBeginEdge(Edge* e);
+
+	string getReverseComplement();
 };

@@ -60,3 +60,7 @@ bool Vertex::isBeginEdge(Edge* e) {
 	}
 	return true;
 }
+
+string Vertex::getReverseComplement() {
+	return read->reverseComplement();
+}

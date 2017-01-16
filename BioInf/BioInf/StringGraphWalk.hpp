@@ -1,7 +1,11 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+
 using namespace std;
+
+class Edge;
+
 /**
 Class created by Mirela
 */

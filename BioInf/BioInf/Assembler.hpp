@@ -1,6 +1,7 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+
 #define IS_EQUAL(x,y,error) ((y <= x + error) && (x <= y + error))
 #define ABS(x) ((x < 0) ? x * (-1) : x)
 
