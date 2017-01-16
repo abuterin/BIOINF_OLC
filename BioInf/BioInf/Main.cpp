@@ -4,6 +4,7 @@
 using namespace std;
 
 typedef struct vector<MHAPOverlap*> Overlaps;
+typedef struct vector<DovetailOverlap*> DovetailOverlaps;
 typedef struct map<unsigned int, Read*> Reads;
 
 int main(int argc, char *argv[]) {
@@ -89,7 +90,7 @@ int main(int argc, char *argv[]) {
 	fclose(mhapFile);
 	/*outFile.close();*/
 
-
+	DovetailOverlaps dovetailOverlaps;
 	//******************************
 	Graph ourGraph(reads,overlaps);
 	ourGraph.simplify();
