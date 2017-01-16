@@ -16,9 +16,9 @@ public:
 	Walk(Vertex* startNode) : _lastNode{ startNode } {
 		_nodes.push_back(startNode);
 	}
-	Walk(vector<Vertex*> parentWalk, Vertex* forkNode) : _lastNode{ forkNode } {	//Walk created from forking parental Walk
-		_nodes = parentWalk;
-		_nodes.push_back(forkNode);
+	Walk(Walk* walk) {	//Walk created from forking parental Walk
+		_nodes = walk->nodes();
+		_lastNode = walk->lastNode();
 	}
 
 	Vertex* lastNode() { return _lastNode; }
