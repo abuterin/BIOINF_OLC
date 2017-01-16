@@ -26,4 +26,6 @@ public:
 
 	void addNode(Vertex* newNode) { _nodes.push_back(newNode); _lastNode = newNode; }
 
+	vector<Walk*> extend(bool direction); //true if extending has occured, false otherwise
+
 };
