@@ -6,6 +6,8 @@
 #include "MHAPOverlap.hpp"
 #include "Assembler.hpp"
 #include "Read.hpp"
+#include "Walk.hpp"
+
 
 #define ABS(x) ((x < 0) ? x * (-1) : x)
 #define MAX(x,y) ((x > y) ? x : y)
@@ -203,8 +205,8 @@ public:
 	}
 
 	void findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
-		vector<unsigned int> walks;
-		vector<int> endsIn; //endsIn[i] num of paths ending in x
+		vector<Walk*> walks;
+		vector<unsigned int> endsIn; //endsIn[i] num of paths ending in x
 		vector<Edge*> _edges;
 		if (direction) {//direction == B
 			_edges = startNode->edges_b;
@@ -212,14 +214,15 @@ public:
 		{
 			_edges = startNode->edges_e;
 		}
-		walks.push_back(Walk(startNode));
+		walks.push_back(new Walk(startNode));
 		for (int i = 0; i < MAX_STEPS; i++) {
-			int deadWalks = 0; //counter
+			unsigned int deadWalks = 0; //counter
 			int walksSize = walks.size();
 			if (walksSize > MAX_WALKS) {
 				break;
 			}
 			for (int j = 0; j < walksSize; j++) {
+				Walk* walk = walks[j];
 
 			}
 		}

@@ -12,7 +12,7 @@
 #include "DovetailOverlap.hpp"
 #include "Assembler.hpp"
 #include "Read.hpp"
-#include "Graph.hpp"
+#include "Graph.h"
 
 using namespace std;
 
