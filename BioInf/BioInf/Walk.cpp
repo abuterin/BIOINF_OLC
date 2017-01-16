@@ -170,5 +170,16 @@ void Walk::extractSequence(string &dest) {
 		if (invert) {
 			//ovdje stao:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::.
 		}
+		else {
+			//::::::::::::::::::::::::::::::::::::::::::::::::::::::::...
+		}
+
+		dest += appendToPrefix ? string(label.rbegin(), label.rend()) : label;
+
+		prevType = getType(e, e->getDestinationNode()) ^ invert;
+	}
+
+	if (appendToPrefix) {
+		dest = string(dest.rbegin(), dest.rend());
 	}
 }
