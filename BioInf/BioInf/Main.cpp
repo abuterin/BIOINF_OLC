@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 
 	DovetailOverlaps dovetailOverlaps;
 	//******************************
-	Graph ourGraph(reads,overlaps);
+	Graph ourGraph(reads,overlaps);		//replace overlaps with dovetailOverlaps!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	ourGraph.simplify();
 
 	for (size_t i = 0; i < reads.size(); i++) {
