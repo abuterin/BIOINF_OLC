@@ -362,7 +362,7 @@ public:
 		}
 	}
 	
-	void simplify() {
+	void simplify2() {
 		bool graphChanges = true;
 		while (graphChanges)
 		{

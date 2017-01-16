@@ -36,7 +36,7 @@ vector<Walk*> Walk::extend(bool direction, Graph* graph) {
 
 		_pathEdges.push_back(_edges[0]);
 		_edges[0]->setInWalk(true);
-		_edges[0]->pair()->setInWalk(true);//mark edge and its pair edge as part of the walk
+		_edges[0]->pair()->setInWalk(true);//mark edge and its pairId edge as part of the walk
 		_lastNode = _nodes.back();
 		walks.push_back(this);
 	}
@@ -87,7 +87,7 @@ vector<Walk*> Walk::extend(bool direction, Graph* graph) {
 			}
 			_pathEdges.push_back(edge);
 			edge->setInWalk(true);
-			edge->pair()->setInWalk(true);//mark edge and its pair edge as part of the walk
+			edge->pair()->setInWalk(true);//mark edge and its pairId edge as part of the walk
 		}
 	}
 
