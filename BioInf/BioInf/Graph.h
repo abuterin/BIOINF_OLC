@@ -7,7 +7,11 @@
 #include "Assembler.hpp"
 #include "Read.hpp"
 #include "Walk.hpp"
+#include <time.h>
 
+int MAX_NODES = 160;
+int MAX_DISTANCE = MAX_NODES * 10000;
+double MAX_DIFFERENCE = 0.25;
 
 #define ABS(x) ((x < 0) ? x * (-1) : x)
 #define MAX(x,y) ((x > y) ? x : y)
@@ -102,11 +106,17 @@ public:
 /**
 Class created by Mirela
 */
+/*!
+* @details Creates a Graph object from reads and overlaps between them.
+* Each Read becomes a Vertex and from each Overlap two Edges are created,
+* one from A to B and one from B to A (A and B are reads in Overlap).
+*/
 class Graph {
 public:
-	map<unsigned int, Vertex*> vertices;//Nodes
+	map<unsigned int, Vertex*> vertices;//Nodes 
 	vector<Edge*> edges;
-	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
+	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps){
+
 		//stvaranje čvorova
 		map<unsigned int, Read*>::iterator it;
 		for (it = reads.begin(); it != reads.end(); it++) {
@@ -129,7 +139,15 @@ public:
 			edge_a->pair = edge_b->edgeId;
 			edge_b->pair = edge_a->edgeId;
 		}
+		
 	}
+	~Graph() {
+		for (auto& vertex : vertices) delete vertex.second;
+		for (auto& edge : edges) delete edge;
+		vertices.clear();
+		edges.clear();
+	}
+	
 	Edge* getEdgeById(unsigned int ID) {
 		for (int i = 0; i < edges.size(); i++) {
 			if (edges[i]->edgeId == ID)
@@ -145,7 +163,6 @@ public:
 				return (it->second);
 		}
 	}
-
 
 	bool trim() {	//as defined in (Vaser, 2015), page 23s
 		vector<unsigned int> markedVertices;//razlikujemo ih po readID
@@ -203,7 +220,7 @@ public:
 		return changes;
 	
 	}
-
+	/**
 	void findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
 		vector<Walk*> walks;
 		vector<unsigned int> endsIn; //endsIn[i] num of paths ending in x
@@ -239,21 +256,55 @@ public:
 		}
 		
 	}
+	*/
 	
+	/*!
+	* @brief Method for graph simplification
+	* @details Method calls both trimming and bubble popping in an alternating
+	* fashion until no changes occur in graph.
+	*/
 	void simplify() {
-		bool graphChanges = true;
-		while (graphChanges)
-		{
-			graphChanges = false;
-			if (trim()) {
-				graphChanges = true;
+		//Timer timer;
+		//timer.start();
+		size_t numTrimmingRounds = 0;
+		size_t numBubbleRounds = 0;
+		size_t numVertices = 0;
+		size_t numEdges = 0;
+		while (numVertices != vertices.size() || numEdges != edges.size()) {
+			fprintf(stderr, "new simplification round...\n");
+
+			numVertices = vertices.size();
+			numEdges = edges.size();
+			// trimming
+			size_t num_vertices_before = 0;
+			while (num_vertices_before != vertices.size()) {
+
+				num_vertices_before = vertices.size();
+
+				++numTrimmingRounds;
+				fprintf(stderr, "trimming...\n");
+				trim();
 			}
-			if (bubbles()) {
-				graphChanges = true;
+			// bubble popping
+			size_t num_edges_before = edges.size();
+
+			fprintf(stderr, "[SG][bubble popping]: max bucket size %lu\n", MAX_NODES);
+			popBubbles();
+
+			++numBubbleRounds;
+
+			if (num_vertices_before == vertices.size() && num_edges_before == edges.size()) {
+				break;
 			}
 		}
-	}
+		fprintf(stderr, "[SG][simplification]: number of trimming rounds = %zu\n", numTrimmingRounds);
+		fprintf(stderr, "[SG][simplification]: number of bubble popping rounds = %zu\n", numBubbleRounds);
+		
+		//timer.stop();
+		//timer.print("SG", "simplification");
 
+	}
+	
 	map<unsigned int, vector<Edge*>> extractingUnitigs() {
 		vector<unsigned int> visitedNodes;
 		map<unsigned int, vector<Edge*>> unitigs;//<start read,overlaps>
@@ -322,19 +373,14 @@ public:
 		return;
 		//return marked;
 	}
+	
 
-	void extractingContigs() {
-		vector<unsigned int> startCandidates;
-		startCandidates = findStartCandidates();
-	}
-	vector<unsigned int> findStartCandidates() {
-
-	}
 	void extractLongestWalk() {
 		typedef tuple<Vertex*, int, double> Candidate;
+
 		// pick n start vertices based on total coverage of their chains to first branch
 		vector<Candidate> startCandidates;
-		uint32_t maxId = 0;
+		unsigned int maxId = 0;
 		for (auto& vertex : vertices) {
 			maxId = MAX(maxId, vertex.first);
 		}
