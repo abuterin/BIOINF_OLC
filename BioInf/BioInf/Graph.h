@@ -18,12 +18,13 @@ Class created by Mirela
 */
 class Edge {
 public:
-	int edgeId;
+	unsigned int edgeId;
 	MHAPOverlap* overlap; 
 	unsigned int sourceNode;
-	int pair;
+	unsigned int pairId;
+	bool _inWalk;
 	//unsigned int destinationNode;
-	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) {
+	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) : _inWalk{ false } {
 		cout << "Constructor called." << endl;
 		edgeId = _edgeId;
 		overlap = _overlap;
@@ -44,6 +45,9 @@ public:
 		}
 		return overlap->aID();
 	}
+
+	bool isInWalk() { return _inWalk; }
+	void setInWalk(bool inWalk) { _inWalk = inWalk; }
 };
 /**
 Class created by Mirela
@@ -55,7 +59,7 @@ public:
 	vector<Edge*> edges_b; //preklapanja koja koriste početak očitanja
 	vector<Edge*> edges_e; //preklapanja koja koriste kraj očitanja
 
-	Vertex(string _read, unsigned int _readID){
+	Vertex(string _read, unsigned int _readID) {
 		readString = _read;
 		readID = _readID;
 	}
@@ -95,6 +99,7 @@ public:
 		}
 		return bestEdge->edgeId;
 	}
+
 };
 /**
 Class created by Mirela
@@ -123,8 +128,8 @@ public:
 			vertices[ovp->aID()]->addEdge(edge_b);
 			vertices[ovp->bID()]->addEdge(edge_a);
 			
-			edge_a->pair = edge_b->edgeId;
-			edge_b->pair = edge_a->edgeId;
+			edge_a->pairId = edge_b->edgeId;
+			edge_b->pairId = edge_a->edgeId;
 		}
 	}
 	Edge* getEdgeById(unsigned int ID) {
@@ -201,28 +206,63 @@ public:
 	
 	}
 
-	void findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
+	vector<Walk*> findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
 		vector<Walk*> walks;
-		vector<unsigned int> endsIn; //endsIn[i] num of paths ending in x
+		vector<unsigned int, unsigned int> endsIn; //endsIn[i] num of paths ending in x
 		vector<Edge*> _edges;
+
 		if (direction) {//direction == B
 			_edges = startNode->edges_b;
 		}else
 		{
 			_edges = startNode->edges_e;
 		}
+
 		walks.push_back(new Walk(startNode));
-		for (int i = 0; i < MAX_STEPS; i++) {
+
+		for (size_t i = 0; i < MAX_STEPS; i++) {
 			unsigned int deadWalks = 0; //counter
-			int walksSize = walks.size();
+			unsigned int walksSize = walks.size();
+
 			if (walksSize > MAX_WALKS) {
 				break;
 			}
-			for (int j = 0; j < walksSize; j++) {
-				Walk* walk = walks[j];
 
+			for (size_t j = 0; j < walksSize; j++) {
+				Walk* walk = walks[j];
+				vector<Walk*> extendedWalks = walk->extend(direction, vertices);
+
+				if (extendedWalks.empty()) {		//current walk is a dead end
+					deadWalks++;
+					continue;
+				}
+
+				walk = extendedWalks.back();		//replace old walk with the extended one (which is at the end)
+
+				for (size_t k = 0; k < extendedWalks.size() - 1; k++) {
+					walks.push_back(extendedWalks[k]);	//add all new forked walks to the list
+				}
+
+				for (Walk* newWalk : extendedWalks) {
+					endsIn[newWalk->lastNode()->readID]++;	//update counter for walk ends
+					if (endsIn[newWalk->lastNode()->readID] == walks.size()) {
+						return walks;		//bubble found!
+					}
+				}
+			}
+			if (deadWalks == walksSize) {
+				break;
 			}
 		}
+
+		for (Walk* walk : walks) {
+			for (Vertex* vertex : walk->nodes()) {
+				vertex->setInWalk(false);
+			}
+			delete walk;
+		}
+		walks.clear();
+		return walks;
 	}
 
 	bool bubbles() {	//ako je došlo do promjena vrati true
@@ -274,7 +314,7 @@ public:
 			
 			//Reverse edges because we will return unitig going in other direction
 			for (int j = 0; j < dst_edges.size(); j++) {
-				Edge* pair = this->getEdgeById(dst_edges[j]->pair);
+				Edge* pair = this->getEdgeById(dst_edges[j]->pairId);
 				dst_edges[j] = pair;
 			}
 			getEdges(&dst_edges, &visitedNodes, node, 1);//direction_right

@@ -22,8 +22,8 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 		vertices[ovp->aID()].addEdge(edge_b);
 		vertices[ovp->bID()].addEdge(edge_a);
 
-		edge_a.pair = edge_b.edgeId;
-		edge_b.pair = edge_a.edgeId;
+		edge_a.pairId = edge_b.edgeId;
+		edge_b.pairId = edge_a.edgeId;
 	}
 }
 
