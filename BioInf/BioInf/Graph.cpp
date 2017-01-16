@@ -5,7 +5,7 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 	//stvaranje čvorova
 	map<unsigned int, Read*>::iterator it;
 	for (it = reads.begin(); it != reads.end(); it++) {
-		Vertex* ver = new Vertex(it->second->read(), it->first);
+		Vertex* ver = new Vertex(it->second, it->first);
 		vertices[it->first] = ver;
 	}
 	//stvaranje bridova

@@ -21,6 +21,8 @@ public:
 		readID = _readID;
 	}
 
+	Vertex(Read* _read, unsigned int _readID) : read{ _read }, readID{ readID }, readString{ _read->read() } {}
+
 	uint32_t getId() {
 		return readID;
 	}
