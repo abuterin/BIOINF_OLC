@@ -1,6 +1,6 @@
 ﻿#include "Graph.hpp"
 
-Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
+Graph::Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps) {
 
 	//stvaranje čvorova
 	map<unsigned int, Read*>::iterator it;
@@ -10,12 +10,13 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 	}
 	//stvaranje bridova
 	for (unsigned int j = 0; j < overlaps.size(); j++) {
-		MHAPOverlap* ovp = overlaps[j];
-
-		Edge* edge_a = new Edge(edges.size(), ovp, ovp->aID());
+		DovetailOverlap* ovp = overlaps[j];
+		//Edge(int _edgeId, MHAPOverlap* _overlap, Vertex* src, Vertex* dst)
+		
+		Edge* edge_a = new Edge(edges.size(), ovp, ovp->aID(), this);
 		edges.push_back(edge_a);
 
-		Edge* edge_b = new Edge(edges.size(), ovp, ovp->bID());
+		Edge* edge_b = new Edge(edges.size(), ovp, ovp->bID(), this);
 		edges.push_back(edge_b);
 
 		vertices[ovp->aID()]->addEdge(edge_b);
@@ -24,7 +25,8 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
 		edge_a->pairId = edge_b->edgeId;
 		edge_b->pairId = edge_a->edgeId;
 	}
-
+	//Edge(uint32_t id, uint32_t readId, Overlap* overlap, StringGraph* graph);
+	//Edge(edges_.size(), overlap->a(), overlap, this);
 }
 Graph::~Graph() {
 	for (auto& vertex : vertices) delete vertex.second;
@@ -355,49 +357,6 @@ void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNode
 	}
 	return;
 	//return marked;
-}
-
-
-void Graph::extractLongestWalk() {
-	typedef tuple<Vertex*, int, double> Candidate;
-
-	// pick n start vertices based on total coverage of their chains to first branch
-	vector<Candidate> startCandidates;
-	unsigned int maxId = 0;
-	for (auto& vertex : vertices) {
-		maxId = MAX(maxId, vertex.first);
-	}
-	// tips and singular chains could be good candidates
-	for (int direction = 0; direction <= 1; ++direction) {
-		for (auto& vertex : vertices) {
-			if ((direction == 0 && vertex.second->edges_b.size() == 1 && vertex.second->edges_e.size() == 0) ||
-			(direction == 1 && vertex.second->edges_b.size() == 1 && vertex.second->edges_e.size() == 0)) {
-				vector<bool> visited(maxId + 1, false);
-				startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
-				visited, 0));
-			}
-		}
-	}
-	// forks could be good candidates, too
-	for (int direction = 0; direction <= 1; ++direction) {
-		for (auto& vertex : vertices) {
-			if ((direction == 0 && vertex.second->edges_b.size() > 1) ||
-			(direction == 1 && vertex.second->edges_e.size() > 1)) {
-				vector<bool> visited(maxId + 1, false);
-				startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
-				visited, 1));
-			}
-		}
-	}
-	// circular component
-	if (startCandidates.size() == 0) {
-	vector<bool> visited(maxId + 1, false);
-
-	int direction = 0;
-	auto vertex = vertices.begin;
-	startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
-	visited, 1));
-	}
 }
 
 
