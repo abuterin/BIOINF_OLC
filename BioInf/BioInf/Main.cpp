@@ -1,18 +1,5 @@
 #pragma once
-
-#include<cstdio>
-#include<cstdlib>
-#include<iostream>
-#include<fstream>
-#include<vector>
-#include<map>
-#include<string>
-
-#include "MHAPOverlap.hpp"
-#include "DovetailOverlap.hpp"
-#include "Assembler.hpp"
-#include "Read.hpp"
-#include "Graph.h"
+#include "CommonHeaders.hpp"
 
 using namespace std;
 

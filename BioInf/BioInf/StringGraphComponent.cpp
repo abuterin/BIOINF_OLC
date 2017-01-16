@@ -1,7 +1,4 @@
 #include "StringGraphComponent.hpp"
-#include <minmax.h>
-#include <algorithm>    // std::sort
-#include "Utils.hpp"
 using namespace std;
 
 // contig extraction params

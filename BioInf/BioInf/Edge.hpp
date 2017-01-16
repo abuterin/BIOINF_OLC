@@ -1,24 +1,40 @@
-/*#pragma once
-#include <iostream>
-#include <vector>
-#include <map>
-#include "MHAPOverlap.hpp"
-#include "Assembler.hpp"
-#include "Read.hpp"
+#pragma once
+#include "CommonHeaders.hpp"
+
 using namespace std;
 
 /**
-	Class created by Mirela
-
+Class created by Mirela
+*/
 class Edge {
 public:
 	int edgeId;
 	MHAPOverlap* overlap;
 	unsigned int sourceNode;
-	int pair;
+	unsigned int pairId;
+	Edge* _pair;
+	bool _inWalk;
+
 	//unsigned int destinationNode;
-	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) : edgeId{ _edgeId }, overlap{ _overlap }, sourceNode{ _sourceNode } {
+	Edge(int _edgeId, MHAPOverlap* _overlap, unsigned int _sourceNode) : _inWalk{ false }, _pair{ nullptr } {
 		cout << "Constructor called." << endl;
+		edgeId = _edgeId;
+		overlap = _overlap;
+		sourceNode = _sourceNode;
 	}
+
+
 	unsigned int opposite(unsigned int vertexID);
-};*/
+
+	unsigned int getDestinationNode();
+
+	MHAPOverlap* getOverlap() {
+		return overlap;
+	}
+
+	bool isInWalk() { return _inWalk; }
+
+	void setInWalk(bool inWalk) { _inWalk = inWalk; }
+
+	Edge* pair() { return _pair; }
+};
