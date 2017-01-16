@@ -138,3 +138,22 @@ double Walk::coverage(bool direction) {
 	
 	return _coverage;
 }
+
+void Walk::extractSequence(string &dest) {
+	if (_pathEdges.empty()) {
+		dest = _nodes[0]->readString;
+		return;
+	}
+
+	auto getType = [](Edge* edge, unsigned int id) -> int {
+		if (edge->overlap->aID() == id) return 0;
+		if (!edge->overlap->isInnie()) return 0;
+		return 1;
+	};
+
+	int startType = getType(_pathEdges.front(), _nodes.front()->readID);
+
+	bool appendToPrefix = (!_pathEdges.front()->overlap->isUsingSuffix(_nodes.front()->readID)) ^ startType;
+
+
+}

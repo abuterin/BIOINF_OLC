@@ -35,4 +35,6 @@ public:
 	void rewindTo(unsigned int);
 
 	double coverage(bool);
+
+	void extractSequence(string&);
 };

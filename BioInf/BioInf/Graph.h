@@ -267,7 +267,7 @@ public:
 				cout << "Bubble root: " << startNode->readID << "\nJunction node: " << junctionID << endl;
 
 				for (Walk* walk : walks) {
-					walk->rewindTo(junctionID, direction, this);
+					walk->rewindTo(junctionID);
 				}
 				bubblesPopped += popBubble(walks, junctionID, direction);
 				break; //break from the first 'for' because junction has surely been found
@@ -303,6 +303,17 @@ public:
 		Walk* baseWalk;
 
 		for (Walk* walk : walks) {
+			/*
+			double errate = 0;
+			double coverage = 0;
+			
+			for (Edge* edge : walk->pathEdges()) {
+				errate += edge->overlap->jaccardScore();
+				coverage += 1;
+
+				coverage -= edge->overlap->coveredPercentageReadA();
+				coverage -= edge->overlap->coveredPercentageReadB();
+			}*/
 			if (walk->coverage(direction) > bestCoverage) {
 				bestCoverage = walk->coverage(direction);
 				baseWalk = walk;
