@@ -1,27 +1,46 @@
-/*#pragma once
-#include <iostream>
-#include <vector>
-#include <map>
-#include "MHAPOverlap.hpp"
-#include "Assembler.hpp"
-#include "Read.hpp"
-#include "Edge.hpp"
+ï»¿#pragma once
+#include "CommonHeaders.hpp"
 
 using namespace std;
 
-/**
-	Class created by Mirela
+class Edge;
 
+/**
+Class created by Mirela
+*/
 class Vertex {
 public:
-	string readString; //oèitanje, reads
+	string readString; //ocitanje, reads
 	unsigned int readID;
-	vector<Edge> edges_b; //preklapanja koja koriste poèetak oèitanja
-	vector<Edge> edges_e; //preklapanja koja koriste kraj oèitanja
+	Read* read;
+	vector<Edge*> edges_b; //preklapanja koja koriste poÄetak oÄitanja
+	vector<Edge*> edges_e; //preklapanja koja koriste kraj oÄitanja
 
-	Vertex(string _read, unsigned int _readID) : readString { _read }, readID{ _readID }{}
+	Vertex(string _read, unsigned int _readID) {
+		readString = _read;
+		readID = _readID;
+	}
 
-	void addEdge(Edge _edge);
+	Vertex(Read* _read, unsigned int _readID) : read{ _read }, readID{ readID }, readString{ _read->read() } {}
+
+	uint32_t getId() {
+		return readID;
+	}
+
+	list<Edge*>& getEdgesB();
+
+	list<Edge*>& getEdgesE();
+
+	void addEdge(Edge* _edge);
+
 	bool isTipCandidate();
+
 	bool isBubbleRootCandidate(bool direction);
-};*/
+
+	unsigned int bestEdge(bool useEnd);
+
+
+	bool isBeginEdge(Edge* e);
+
+	string getReverseComplement();
+};
