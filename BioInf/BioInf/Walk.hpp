@@ -1,6 +1,5 @@
 #pragma once
-#include<vector>
-#include "Graph.h"		//change to Vertex.hpp
+#include "CommonHeaders.hpp"
 
 using namespace std;
 

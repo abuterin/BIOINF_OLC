@@ -1,30 +1,60 @@
-﻿/*#pragma once
-#include <iostream>
-#include <vector>
-#include <map>
-#include "MHAPOverlap.hpp"
-#include "Assembler.hpp"
-#include "Read.hpp"
-#include "Vertex.hpp"
+﻿#pragma once
+#include "CommonHeaders.hpp"
 
 using namespace std;
 
-/**
-	Class created by Mirela
+class Walk;
 
+int MAX_NODES = 160;
+int MAX_DISTANCE = MAX_NODES * 10000;
+double MAX_DIFFERENCE = 0.25;
+
+#define ABS(x) ((x < 0) ? x * (-1) : x)
+#define MAX(x,y) ((x > y) ? x : y)
+
+int NOT_FOUND = -1;
+int NOT_DEFINED = -1;
+
+
+/**
+Class created by Mirela & Ante
+*/
+/*!
+* @details Creates a Graph object from reads and overlaps between them.
+* Each Read becomes a Vertex and from each Overlap two Edges are created,
+* one from A to B and one from B to A (A and B are reads in Overlap).
+*/
 class Graph {
 public:
-	map<unsigned int, Vertex> vertices;//Nodes
-	vector<Edge> edges;
+	map<unsigned int, Vertex*> vertices;//Nodes 
+	vector<Edge*> edges;
 	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps);
+	
+	~Graph();
 
-	Vertex getVertexById(unsigned int vertexId);
+	Edge* getEdgeById(unsigned int ID);
+
+	Vertex* getVertexById(unsigned int vertexId);
 
 	bool trim();
 
-	void findBubbles(Vertex startNode, bool direction, int MAX_STEPS, int MAX_WALKS);
+	vector<Walk*> findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS);
 
 	bool bubbles();
 
+	unsigned int popBubble(vector<Walk*> walks, unsigned int junctionID, bool direction);
+	/*!
+	* @brief Method for graph simplification
+	* @details Method calls both trimming and bubble popping in an alternating
+	* fashion until no changes occur in graph.
+	*/
 	void simplify();
-};*/
+
+	map<unsigned int, vector<Edge*>> Graph::extractingUnitigs();
+
+	void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection);
+
+	void Graph::extractLongestWalk();
+
+	void Graph::extractComponents(vector<StringGraphComponent*>& dst)
+};

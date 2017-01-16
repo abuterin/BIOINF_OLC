@@ -1,12 +1,11 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include <map>
-#include "MHAPOverlap.hpp"
-#include "Vertex.hpp"
-#include "Graph.h"		//REMOVE LATER
+#include "CommonHeaders.hpp"
+
 
 using namespace std;
+
+class Edge;
+
 /**
 Class created by Mirela
 */

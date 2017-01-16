@@ -1,6 +1,5 @@
 #pragma once
-#include<vector>
-#include<cstdio>
+#include "CommonHeaders.hpp"
 
 using namespace std;
 

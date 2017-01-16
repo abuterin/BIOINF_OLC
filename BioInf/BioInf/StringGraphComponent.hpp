@@ -1,15 +1,5 @@
 #pragma once
-#include "MHAPOverlap.hpp"
-#include "DovetailOverlap.hpp"
-#include "Assembler.hpp"
-#include "Read.hpp"
-#include "Graph.h" //maknut kasnije
-#include "Graph.hpp"
-#include <iostream>
-#include <vector>
-#include <map>
-#include "Vertex.hpp"
-#include "StringGraphWalk.hpp"
+#include "CommonHeaders.hpp"
 
 using namespace std;
 

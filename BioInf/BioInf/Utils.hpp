@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <sys/stat.h>
-//#include <sys/time.h>
+#include "CommonHeaders.hpp"
 
 /*************************************************************************************** /
 * Title: RNA Assembler source code
