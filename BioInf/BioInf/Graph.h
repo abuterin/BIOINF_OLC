@@ -7,8 +7,16 @@
 #include "Assembler.hpp"
 #include "Read.hpp"
 #include "Walk.hpp"
+#include <time.h>
 
 class Walk;
+
+int MAX_NODES = 160;
+int MAX_DISTANCE = MAX_NODES * 10000;
+double MAX_DIFFERENCE = 0.25;
+
+#define ABS(x) ((x < 0) ? x * (-1) : x)
+#define MAX(x,y) ((x > y) ? x : y)
 
 int NOT_FOUND = -1;
 int NOT_DEFINED = -1;
@@ -19,7 +27,7 @@ Class created by Mirela
 */
 class Edge {
 public:
-	unsigned int edgeId;
+	int edgeId;
 	MHAPOverlap* overlap; 
 	unsigned int sourceNode;
 	unsigned int pairId;
@@ -47,6 +55,9 @@ public:
 		}
 		return overlap->aID();
 	}
+	MHAPOverlap* getOverlap() {
+		return overlap;
+	}
 
 	bool isInWalk() { return _inWalk; }
 	void setInWalk(bool inWalk) { _inWalk = inWalk; }
@@ -63,9 +74,26 @@ public:
 	vector<Edge*> edges_b; //preklapanja koja koriste početak očitanja
 	vector<Edge*> edges_e; //preklapanja koja koriste kraj očitanja
 
-	Vertex(string _read, unsigned int _readID) {
+	Vertex(string _read, unsigned int _readID){
 		readString = _read;
 		readID = _readID;
+	}
+	uint32_t getId() {
+		return readID;
+	}
+	list<Edge*>& getEdgesB() {
+		list<Edge*> edgesB;
+		for (auto& it : edges_b) {
+			edgesB.push_back(it);
+		}
+		return edgesB;
+	}
+	list<Edge*>& getEdgesE() {
+		list<Edge*> edgesE;
+		for (auto& it : edges_e) {
+			edgesE.push_back(it);
+		}
+		return edgesE;
 	}
 	void addEdge(Edge* _edge) {
 		bool using_suffix = _edge->overlap->isUsingSuffix(this->readID);
@@ -113,16 +141,21 @@ public:
 		}
 		return true;
 	}
-
 };
 /**
 Class created by Mirela
 */
+/*!
+* @details Creates a Graph object from reads and overlaps between them.
+* Each Read becomes a Vertex and from each Overlap two Edges are created,
+* one from A to B and one from B to A (A and B are reads in Overlap).
+*/
 class Graph {
 public:
-	map<unsigned int, Vertex*> vertices;//Nodes
+	map<unsigned int, Vertex*> vertices;//Nodes 
 	vector<Edge*> edges;
-	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps) {
+	Graph(map<unsigned int, Read*> reads, vector<MHAPOverlap*> overlaps){
+
 		//stvaranje čvorova
 		map<unsigned int, Read*>::iterator it;
 		for (it = reads.begin(); it != reads.end(); it++) {
@@ -143,11 +176,17 @@ public:
 			vertices[ovp->bID()]->addEdge(edge_a);
 			
 			edge_a->pairId = edge_b->edgeId;
-			edge_a->_pair = edge_b;
 			edge_b->pairId = edge_a->edgeId;
-			edge_b->_pair = edge_a;
 		}
+		
 	}
+	~Graph() {
+		for (auto& vertex : vertices) delete vertex.second;
+		for (auto& edge : edges) delete edge;
+		vertices.clear();
+		edges.clear();
+	}
+	
 	Edge* getEdgeById(unsigned int ID) {
 		for (int i = 0; i < edges.size(); i++) {
 			if (edges[i]->edgeId == ID)
@@ -157,13 +196,12 @@ public:
 	}
 
 	Vertex* getVertexById(unsigned int vertexId) {
-		map<unsigned int, Vertex*>::iterator it;
-		for (it = vertices.begin(); it != vertices.end(); it++) {
-			if (it->first == vertexId)
-				return (it->second);
+		if (!vertices.count(vertexId)) {
+			return nullptr;
 		}
+		return vertices.at(vertexId);
+	
 	}
-
 
 	bool trim() {	//as defined in (Vaser, 2015), page 23s
 		vector<unsigned int> markedVertices;//razlikujemo ih po readID
@@ -231,7 +269,8 @@ public:
 
 		if (direction) {//direction == B
 			_edges = startNode->edges_b;
-		}else
+		}
+		else
 		{
 			_edges = startNode->edges_e;
 		}
@@ -240,7 +279,7 @@ public:
 
 		for (size_t i = 0; i < MAX_STEPS; i++) {
 			unsigned int deadWalks = 0; //counter
-			unsigned int walksSize = walks.size();	
+			unsigned int walksSize = walks.size();
 
 			if (walksSize > MAX_WALKS) {
 				break;
@@ -298,7 +337,7 @@ public:
 	}
 
 	bool bubbles() {	//ako je došlo do promjena vrati true
-		//detect node with more than one outgoing edge
+						//detect node with more than one outgoing edge
 		map<unsigned int, Vertex*>::iterator it;
 		for (it = vertices.begin(); it != vertices.end(); it++) {
 			if ((it->second)->isBubbleRootCandidate(true)) {//direction==B
@@ -306,7 +345,7 @@ public:
 			}
 
 		}
-		
+
 	}
 
 	unsigned int popBubble(vector<Walk*> walks, unsigned int junctionID, bool direction) {
@@ -323,7 +362,7 @@ public:
 		auto countExternalEdges = [&edgeUsed](Vertex* v, Edge* incomingEdge) -> int {
 			int externalEdges = 0;
 
-			vector<Edge*> vEdges = v->isBeginEdge(incomingEdge) ? v->edges_b : v->edges_e; 
+			vector<Edge*> vEdges = v->isBeginEdge(incomingEdge) ? v->edges_b : v->edges_e;
 			for (Edge* edge : vEdges) {
 				if (edgeUsed.count(edge->edgeId) == 0) {
 					externalEdges++;
@@ -347,13 +386,13 @@ public:
 			/*
 			double errate = 0;
 			double coverage = 0;
-			
-			for (Edge* edge : walk->pathEdges()) {
-				errate += edge->overlap->jaccardScore();
-				coverage += 1;
 
-				coverage -= edge->overlap->coveredPercentageReadA();
-				coverage -= edge->overlap->coveredPercentageReadB();
+			for (Edge* edge : walk->pathEdges()) {
+			errate += edge->overlap->jaccardScore();
+			coverage += 1;
+
+			coverage -= edge->overlap->coveredPercentageReadA();
+			coverage -= edge->overlap->coveredPercentageReadB();
 			}*/
 			if (walk->coverage(direction) > bestCoverage) {
 				bestCoverage = walk->coverage(direction);
@@ -362,30 +401,62 @@ public:
 		}
 	}
 	
-	void simplify2() {
-		bool graphChanges = true;
-		while (graphChanges)
-		{
-			graphChanges = false;
-			if (trim()) {
-				graphChanges = true;
+	/*!
+	* @brief Method for graph simplification
+	* @details Method calls both trimming and bubble popping in an alternating
+	* fashion until no changes occur in graph.
+	*/
+	void simplify() {
+		//Timer timer;
+		//timer.start();
+		size_t numTrimmingRounds = 0;
+		size_t numBubbleRounds = 0;
+		size_t numVertices = 0;
+		size_t numEdges = 0;
+		while (numVertices != vertices.size() || numEdges != edges.size()) {
+			fprintf(stderr, "new simplification round...\n");
+
+			numVertices = vertices.size();
+			numEdges = edges.size();
+			// trimming
+			size_t num_vertices_before = 0;
+			while (num_vertices_before != vertices.size()) {
+
+				num_vertices_before = vertices.size();
+
+				++numTrimmingRounds;
+				fprintf(stderr, "trimming...\n");
+				trim();
 			}
-			if (bubbles()) {
-				graphChanges = true;
+			// bubble popping
+			size_t num_edges_before = edges.size();
+
+			fprintf(stderr, "[SG][bubble popping]: max bucket size %lu\n", MAX_NODES);
+			popBubbles();
+
+			++numBubbleRounds;
+
+			if (num_vertices_before == vertices.size() && num_edges_before == edges.size()) {
+				break;
 			}
 		}
-	}
+		fprintf(stderr, "[SG][simplification]: number of trimming rounds = %zu\n", numTrimmingRounds);
+		fprintf(stderr, "[SG][simplification]: number of bubble popping rounds = %zu\n", numBubbleRounds);
+		
+		//timer.stop();
+		//timer.print("SG", "simplification");
 
+	}
+	/*
 	map<unsigned int, vector<Edge*>> extractingUnitigs() {
 		vector<unsigned int> visitedNodes;
 		map<unsigned int, vector<Edge*>> unitigs;//<start read,overlaps>
 		
-		map<unsigned int, Vertex*>::iterator it;
-		for (it = vertices.begin(); it != vertices.end(); it++) {
+		for (auto it : vertices) {
 			bool visited = false;
-			Vertex* node = it->second;
+			Vertex* node = it.second;
 			for (int i = 0; i < visitedNodes.size(); i++) {
-				if (visitedNodes[i] == it->first) {
+				if (visitedNodes[i] == it.first) {
 					visited = true;
 					break;
 				}
@@ -399,8 +470,8 @@ public:
 			
 			//Reverse edges because we will return unitig going in other direction
 			for (int j = 0; j < dst_edges.size(); j++) {
-				Edge* pair = this->getEdgeById(dst_edges[j]->pairId);
-				dst_edges[j] = pair;
+				Edge* pairId = this->getEdgeById(dst_edges[j]->pairId);
+				dst_edges[j] = pairId;
 			}
 			getEdges(&dst_edges, &visitedNodes, node, 1);//direction_right
 			unitigs[dst_edges[0]->sourceNode] = dst_edges;
@@ -443,5 +514,55 @@ public:
 		}
 		return;
 		//return marked;
+	}
+	
+
+	void extractLongestWalk() {
+		typedef tuple<Vertex*, int, double> Candidate;
+
+		// pick n start vertices based on total coverage of their chains to first branch
+		vector<Candidate> startCandidates;
+		unsigned int maxId = 0;
+		for (auto& vertex : vertices) {
+			maxId = MAX(maxId, vertex.first);
+		}
+		// tips and singular chains could be good candidates
+		for (int direction = 0; direction <= 1; ++direction) {
+			for (auto& vertex : vertices) {
+				if ((direction == 0 && vertex.second->edges_b.size() == 1 && vertex.second->edges_e.size() == 0) ||
+					(direction == 1 && vertex.second->edges_b.size() == 1 && vertex.second->edges_e.size() == 0)) {
+					vector<bool> visited(maxId + 1, false);
+					startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
+						visited, 0));
+				}
+			}
+		}
+		// forks could be good candidates, too
+		for (int direction = 0; direction <= 1; ++direction) {
+			for (auto& vertex : vertices) {
+				if ((direction == 0 && vertex.second->edges_b.size() > 1) ||
+					(direction == 1 && vertex.second->edges_e.size() > 1)) {
+					vector<bool> visited(maxId + 1, false);
+					startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
+						visited, 1));
+				}
+			}
+		}
+		// circular component
+		if (startCandidates.size() == 0) {
+			vector<bool> visited(maxId + 1, false);
+
+			int direction = 0;
+			auto vertex = vertices.begin;
+			startCandidates.emplace_back(vertex, direction, longest_sequence_length(vertex, direction,
+				visited, 1));
+		}
+
+
+	}
+	*/
+
+	void extractComponents(vector<StringGraphComponent*>& dst) {
+
 	}
 };
