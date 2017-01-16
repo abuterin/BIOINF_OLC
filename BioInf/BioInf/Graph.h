@@ -8,6 +8,7 @@
 #include "Read.hpp"
 #include "Walk.hpp"
 
+class Walk;
 
 int NOT_FOUND = -1;
 int NOT_DEFINED = -1;
@@ -101,6 +102,16 @@ public:
 			}
 		}
 		return bestEdge->edgeId;
+	}
+
+	bool isBeginEdge(Edge* e) {
+		if (e == nullptr) {
+			return false;
+		}
+		if (e->overlap->isUsingSuffix(readID)) {
+			return false;
+		}
+		return true;
 	}
 
 };
@@ -301,6 +312,36 @@ public:
 	unsigned int popBubble(vector<Walk*> walks, unsigned int junctionID, bool direction) {
 		double bestCoverage = 0;
 		Walk* baseWalk;
+		map<unsigned int, unsigned int> edgeUsed; //number of walks using certain edge
+
+		for (Walk* walk : walks) {
+			for (Edge* e : walk->pathEdges()) {
+				edgeUsed[e->edgeId]++;
+			}
+		}
+
+		auto countExternalEdges = [&edgeUsed](Vertex* v, Edge* incomingEdge) -> int {
+			int externalEdges = 0;
+
+			vector<Edge*> vEdges = v->isBeginEdge(incomingEdge) ? v->edges_b : v->edges_e; 
+			for (Edge* edge : vEdges) {
+				if (edgeUsed.count(edge->edgeId) == 0) {
+					externalEdges++;
+				}
+			}
+
+			return externalEdges;
+		};
+
+		for (Walk* walk : walks) {
+			int externalEdgesBefore = 0;
+
+			for (Edge* edge : walk->pathEdges()) {
+				if (edge->isInWalk()) {
+					continue;
+				}
+			}
+		}
 
 		for (Walk* walk : walks) {
 			/*
