@@ -11,12 +11,14 @@ private:
 	string _read;
 	string _reverseComplement;
 	unsigned int _ID;
+	double _coverage;
 
 public:
-	Read(string read, unsigned int ID) : _read{ read }, _ID{ ID } {}
+	Read(string read, unsigned int ID) : _read{ read }, _ID{ ID }, _coverage{ 1.0 } {}
 
 	string read() { return _read; }
 	unsigned int ID() { return _ID; }
+	double coverage() { return _coverage; }
 
 	string reverseComplement();
 };
