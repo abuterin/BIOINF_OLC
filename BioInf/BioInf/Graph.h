@@ -51,6 +51,10 @@ public:
 		}
 		return overlap->aID();
 	}
+	MHAPOverlap* getOverlap() {
+		return overlap;
+	}
+
 };
 /**
 Class created by Mirela
@@ -65,6 +69,23 @@ public:
 	Vertex(string _read, unsigned int _readID){
 		readString = _read;
 		readID = _readID;
+	}
+	uint32_t getId() {
+		return readID;
+	}
+	list<Edge*>& getEdgesB() {
+		list<Edge*> edgesB;
+		for (auto& it : edges_b) {
+			edgesB.push_back(it);
+		}
+		return edgesB;
+	}
+	list<Edge*>& getEdgesE() {
+		list<Edge*> edgesE;
+		for (auto& it : edges_e) {
+			edgesE.push_back(it);
+		}
+		return edgesE;
 	}
 	void addEdge(Edge* _edge) {
 		bool using_suffix = _edge->overlap->isUsingSuffix(this->readID);
@@ -157,11 +178,11 @@ public:
 	}
 
 	Vertex* getVertexById(unsigned int vertexId) {
-		map<unsigned int, Vertex*>::iterator it;
-		for (it = vertices.begin(); it != vertices.end(); it++) {
-			if (it->first == vertexId)
-				return (it->second);
+		if (!vertices.count(vertexId)) {
+			return nullptr;
 		}
+		return vertices.at(vertexId);
+	
 	}
 
 	bool trim() {	//as defined in (Vaser, 2015), page 23s
@@ -304,17 +325,16 @@ public:
 		//timer.print("SG", "simplification");
 
 	}
-	
+	/*
 	map<unsigned int, vector<Edge*>> extractingUnitigs() {
 		vector<unsigned int> visitedNodes;
 		map<unsigned int, vector<Edge*>> unitigs;//<start read,overlaps>
 		
-		map<unsigned int, Vertex*>::iterator it;
-		for (it = vertices.begin(); it != vertices.end(); it++) {
+		for (auto it : vertices) {
 			bool visited = false;
-			Vertex* node = it->second;
+			Vertex* node = it.second;
 			for (int i = 0; i < visitedNodes.size(); i++) {
-				if (visitedNodes[i] == it->first) {
+				if (visitedNodes[i] == it.first) {
 					visited = true;
 					break;
 				}
@@ -416,6 +436,11 @@ public:
 				visited, 1));
 		}
 
+
+	}
+	*/
+
+	void extractComponents(vector<StringGraphComponent*>& dst) {
 
 	}
 };
