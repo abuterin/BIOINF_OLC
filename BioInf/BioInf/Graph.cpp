@@ -34,8 +34,9 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps) 
 	//Edge(edges_.size(), overlap->a(), overlap, this);
 }
 Graph::~Graph() {
-	for (auto& vertex : vertices) delete vertex.second;
-	for (auto& edge : edges) delete edge;
+	map<unsigned int, Vertex*>::iterator it;
+	for (it = vertices.begin(); it != vertices.end(); it++) delete it->second;
+	for (Edge* edge : edges) delete edge;
 	vertices.clear();
 	edges.clear();
 }
@@ -467,16 +468,16 @@ void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNode
 void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 	
 	uint32_t maxId = 0;
-
-	for (auto kv : vertices) {
-		auto vertex = kv.second;
+	map<unsigned int, Vertex*>::iterator it;
+	for (it = vertices.begin(); it != vertices.end(); it++) {
+		Vertex* vertex = it->second;
 		maxId = max(vertex->getId(), maxId);
 	}
 
 	std::vector<bool> used(maxId + 1, false);
 
-	for (auto kv : vertices) {
-		auto vertex = kv.second;
+	for (it = vertices.begin(); it != vertices.end(); it++) {
+		Vertex* vertex = it->second;
 
 		if (used[vertex->getId()] == true) {
 			continue;
@@ -492,11 +493,11 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 
 			std::vector<int> newExpanded;
 
-			for (auto id : expanded) {
+			for (int id : expanded) {
 
-				auto eVertex = getVertex(id);
+				Vertex* eVertex = getVertex(id);
 
-				for (auto edge : eVertex->getEdgesB()) {
+				for (Edge* edge : eVertex->getEdgesB()) {
 					auto pair = componentVertices.insert(edge->getDst()->getId());
 
 					if (pair.second == true) {
@@ -504,7 +505,7 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 					}
 				}
 
-				for (auto edge : eVertex->getEdgesE()) {
+				for (Edge* edge : eVertex->getEdgesE()) {
 					auto pair = componentVertices.insert(edge->getDst()->getId());
 
 					if (pair.second == true) {
@@ -516,7 +517,7 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 			expanded.swap(newExpanded);
 		}
 
-		for (auto& id : componentVertices) {
+		for (int id : componentVertices) {
 			used[id] = true;
 		}
 
@@ -542,9 +543,9 @@ int Graph::extractUnitigs(std::vector<StringGraphWalk*> walks) {
 	std::vector<int> unitig_id(max_id + 1, NOT_DEFINED);
 	int curr_unitig_id = 1;
 
-	for (auto kv : vertices) {
+	for (it = vertices.begin(); it != vertices.end(); it++) {
 
-		Vertex* vertex = kv.second;
+		Vertex* vertex = it->second;
 
 		if (unitig_id[vertex->getId()] != NOT_DEFINED) continue;
 
@@ -568,7 +569,7 @@ int Graph::extractUnitigs(std::vector<StringGraphWalk*> walks) {
 
 			walks.emplace_back(new StringGraphWalk(edges.front()->getSrc()));
 
-			for (auto e : edges) {
+			for (Edge* e : edges) {
 				walks.back()->addEdge(e);
 			}
 
@@ -588,14 +589,14 @@ int Graph::markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id
 	int marked = 0;
 	int use_suffix = start_direction;
 
-	auto curr_vertex = start;
+	Vertex* curr_vertex = start;
 
 	while (true) {
 		(*unitig_id)[curr_vertex->getId()] = id;
 
 		marked++;
 
-		auto edge = curr_vertex->bestEdge(use_suffix);
+		Edge* edge = curr_vertex->bestEdge(use_suffix);
 
 		if (edge == nullptr) {
 			break;
@@ -605,7 +606,7 @@ int Graph::markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id
 			use_suffix = 1 - use_suffix;
 		}
 
-		auto next = edge->getDst();
+		Vertex* next = edge->getDst();
 
 		// if curr and next do not share best overlap
 		if (next->bestEdge(1 - use_suffix)->getOverlap() != edge->getOverlap()) {
@@ -717,8 +718,8 @@ void Graph::deleteMarkedEdges() {
 	}
 	edges.resize(confirmed);
 
-	for (auto idx : dirty_vertices) {
-		auto vertex = getVertex(idx);
+	for (int idx : dirty_vertices) {
+		Vertex* vertex = getVertex(idx);
 		if (vertex != nullptr) {
 			getVertex(idx)->removeMarkedEdges();
 		}
@@ -732,17 +733,18 @@ void Graph::deleteMarkedEdges() {
 void Graph::deleteMarkedVertices() {
 	std::vector<int> for_removal;
 
-	for (auto it : vertices) {
-		Vertex* v = it.second;
+	map<unsigned int, Vertex*>::iterator it;
+	for (it = vertices.begin(); it != vertices.end(); it++) {
+		Vertex* v = it->second;
 		if (!v->isMarked()) {
 			continue;
 		}
 
-		for (auto edge : v->getEdgesB()) {
+		for (Edge* edge : v->getEdgesB()) {
 			edge->mark();
 			edge->pair()->mark();
 		}
-		for (auto edge : v->getEdgesE()) {
+		for (Edge* edge : v->getEdgesE()) {
 			edge->mark();
 			edge->pair()->mark();
 		}
@@ -750,8 +752,8 @@ void Graph::deleteMarkedVertices() {
 	}
 
 	for (int idx : for_removal) {
-		auto it = vertices.find(idx);
-		auto v = it->second;
+		it = vertices.find(idx);
+		Vertex* v = it->second;
 		vertices.erase(it);
 		delete v;
 	}
