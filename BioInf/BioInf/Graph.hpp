@@ -3,7 +3,7 @@
 
 #include "edlib.h"
 #include "Walk.hpp"
-
+#include "Utils.hpp"
 
 using namespace std;
 
@@ -12,15 +12,18 @@ class StringGraphWalk;
 class Walk;
 class Edge;
 
-int MAX_NODES = 160;
-int MAX_DISTANCE = MAX_NODES * 10000;
-double MAX_DIFFERENCE = 0.25;
 
 #define ABS(x) ((x < 0) ? x * (-1) : x)
 #define MAX(x,y) ((x > y) ? x : y)
+#define MAX_STEPS 20
+#define MAX_WALKS 20
 
 int NOT_FOUND = -1;
 int NOT_DEFINED = -1;
+
+int MAX_NODES = 160;
+int MAX_DISTANCE = MAX_NODES * 10000;
+double MAX_DIFFERENCE = 0.25;
 
 
 /**
@@ -54,9 +57,9 @@ public:
 
 	bool trim();
 
-	vector<Walk*> findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS);
+	unsigned int findBubbles(Vertex* startNode, bool direction);
 
-	bool bubbles();
+	unsigned int popBubbles();
 
 	unsigned int popBubble(vector<Walk*> walks, unsigned int junctionID, bool direction);
 	/*!

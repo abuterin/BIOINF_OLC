@@ -113,7 +113,7 @@ bool Graph::trim() {	//as defined in (Vaser, 2015), page 23s
 
 }
 
-vector<Walk*> Graph::findBubbles(Vertex* startNode, bool direction, int MAX_STEPS, int MAX_WALKS) {
+unsigned int Graph::findBubbles(Vertex* startNode, bool direction) {
 	vector<Walk*> walks;
 	vector<unsigned int, unsigned int> endsIn; //endsIn[i] num of paths ending in x
 	vector<Edge*> _edges;
@@ -189,19 +189,35 @@ vector<Walk*> Graph::findBubbles(Vertex* startNode, bool direction, int MAX_STEP
 	}
 
 	walks.clear();
-	return walks;
+	return bubblesPopped;
 }
 
-bool Graph::bubbles() {	//ako je došlo do promjena vrati true
+unsigned int Graph::popBubbles() {	//ako je došlo do promjena vrati true
 					//detect node with more than one outgoing edge
+	size_t bubblesPopped = 0;
+
 	map<unsigned int, Vertex*>::iterator it;
 	for (it = vertices.begin(); it != vertices.end(); it++) {
-		if ((it->second)->isBubbleRootCandidate(true)) {//direction==B
-			//findBubbles(it->second, true, MAX_STEPS);
+		Vertex* vertex = it->second;
+
+		if (vertex->isMarked()) {
+			continue;
 		}
 
+		for (int direction = 0; direction <= 1; direction++) {
+			if (!vertex->isBubbleRootCandidate(direction)) {
+				continue;
+			}
+
+			bubblesPopped += findBubbles(vertex, direction);
+		}
 	}
 
+	if (bubblesPopped > 0) {
+		deleteMarked();
+	}
+
+	return bubblesPopped;
 }
 
 unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool direction) {
@@ -363,7 +379,7 @@ void Graph::simplify() {
 		size_t num_edges_before = edges.size();
 
 		fprintf(stderr, "[SG][bubble popping]: max bucket size %lu\n", MAX_NODES);
-		//popBubbles();
+		popBubbles();
 
 		++numBubbleRounds;
 
