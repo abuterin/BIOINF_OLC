@@ -58,10 +58,16 @@ public:
 	*/
 	void simplify();
 
-	map<unsigned int, vector<Edge*>> Graph::extractingUnitigs();
+	//map<unsigned int, vector<Edge*>> Graph::extractingUnitigs();
 
-	void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection);
+	//void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNodes, Vertex* startNode, int startDirection);
 
-	void Graph::extractComponents(vector<StringGraphComponent*>& dst);
+	void extractComponents(vector<StringGraphComponent*>& dst); 
+	
+
+	int extract_unitigs(std::vector<StringGraphWalk*>* walks);
+
+	int mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
+		int id, Vertex* start, int start_direction);
 
 };

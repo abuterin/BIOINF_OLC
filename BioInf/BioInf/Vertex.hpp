@@ -44,7 +44,7 @@ public:
 
 	bool isBubbleRootCandidate(bool direction);
 
-	unsigned int bestEdge(bool useEnd);
+	Edge* bestEdge(bool useEnd);
 
 
 	bool isBeginEdge(Edge* e);
