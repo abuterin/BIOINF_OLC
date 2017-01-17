@@ -1,5 +1,10 @@
 #pragma once
-#include "CommonHeaders.hpp"
+//#include "CommonHeaders.hpp"
+
+#include "Vertex.hpp"
+#include "DovetailOverlap.hpp"
+
+class Graph;
 
 using namespace std;
 
@@ -7,36 +12,31 @@ using namespace std;
 Class created by Mirela
 */
 class Edge {
+private:
+	bool _marked = false; //marked for deletion
+	bool _inWalk;
+
 public:
 	int edgeId;
 	DovetailOverlap* overlap;
 	Vertex* source;
-	Vertex* destiantion;
+	Vertex* destination;
 	unsigned int sourceId;
 	unsigned int destinationId;
 	unsigned int pairId;
 	Edge* _pair;
-	bool _inWalk;
+
 	int labelLength_;
 	Graph* graph;
 
 	//unsigned int destinationNode;
-	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph) : _inWalk{ false }, _pair{ nullptr } {
-		//cout << "Constructor called." << endl;
-		graph = gph;
-		sourceId = srcId;
-		edgeId = _edgeId;
-		overlap = _overlap;
-		labelLength_ = -1;
-		source = gph->getVertex(srcId);
-		destiantion = gph->getVertex(overlap->aID() == srcId? overlap->bID(): overlap->aID());
-	}
+	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph);
 
 	Vertex* getSrc() {
 		return source;
 	}
 	Vertex* getDst() {
-		return destiantion;
+		return destination;
 	}
 
 	DovetailOverlap* getOverlap() {
@@ -49,77 +49,19 @@ public:
 
 	Edge* pair() { return _pair; }
 
-	unsigned int opposite(unsigned int vertexID) {
-		if (overlap->aID() == vertexID) {
-			return overlap->bID();
-		}
-		else if (overlap->bID() == vertexID) {
-			return overlap->aID();
-		}
+	unsigned int opposite(unsigned int vertexID);
+
+	int labelLength();
+
+	void label(string& dst);
+
+	void rkLabel(string& dst);
+
+	void mark() {
+		_marked = true;
 	}
 
-	int labelLength() {
+	bool isMarked() { return _marked; }
 
-		if (labelLength_ > -1) {
-			return labelLength_;
-		}
-
-		std::string l;
-		label(l);
-		labelLength_ = l.length();
-
-		//assert(labelLength_ == abs(overlap->a_hang()) || labelLength_ == abs(overlap->b_hang()));
-
-		return labelLength_;
-	}
-
-	void label(string& dst) {
-
-		if (source->getId() == overlap->aID()) {
-			// from A to B
-			int start, len;
-
-			if (overlap->isInnie()) {
-
-				if (overlap->isUsingSuffix(destiantion->getId())) {
-					start = overlap->length(destiantion->getId());
-					len = overlap->bHang();
-				}
-				else {
-					start = 0;
-					len = -1 * overlap->aHang();
-				}
-
-			}
-			else {
-
-				if (overlap->isUsingSuffix(destiantion->getId())) {
-					start = 0;
-					len = -1 * overlap->aHang();
-				}
-				else {
-					start = overlap->length(destiantion->getId());
-					len = overlap->bHang();
-				}
-			}
-
-			dst = (overlap->isInnie() ? destiantion->getReverseComplement() : destiantion->getSequence()).substr(start, len);
-
-		}
-		else {
-			// from B to A
-			int start, len;
-
-			if (overlap->isUsingSuffix(destiantion->getId())) {
-				start = 0;
-				len = overlap->aHang();
-			}
-			else {
-				start = overlap->length(destiantion->getId());
-				len = -1 * overlap->bHang();
-			}
-
-			dst = destiantion->getSequence().substr(start, len);
-		}
-	}
+	Vertex* oppositeVertex(unsigned int id);
 };

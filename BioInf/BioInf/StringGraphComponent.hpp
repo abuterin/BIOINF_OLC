@@ -1,6 +1,12 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+#include "Edge.hpp"
+#include "Vertex.hpp"
+#include "StringGraphWalk.hpp"
+
+class Graph;
+
 using namespace std;
 
 class StringGraphComponent {

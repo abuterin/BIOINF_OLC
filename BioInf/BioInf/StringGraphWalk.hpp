@@ -1,10 +1,13 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+#include "Edge.hpp"
+#include "Vertex.hpp"
 
 using namespace std;
 
 class Edge;
+class Vertex;
 
 /**
 Class created by Mirela
@@ -12,9 +15,9 @@ Class created by Mirela
 class StringGraphWalk {
 private:
 	Vertex* start_;
-	std::vector<Edge*> edges_;
-	std::set<int> visitedVertices_;
-	std::set<int> visitedEdges_;
+	vector<Edge*> edges_;
+	set<int> visitedVertices_;
+	set<int> visitedEdges_;
 
 public:
 	StringGraphWalk(Vertex* start);
