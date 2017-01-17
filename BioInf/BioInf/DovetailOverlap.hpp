@@ -1,6 +1,8 @@
 #pragma once
 
-#include "CommonHeaders.hpp"
+//#include "CommonHeaders.hpp"
+
+#include "MHAPOverlap.hpp"
 
 /**
 	Class created by Ante
@@ -16,8 +18,7 @@ private:
 	uint32_t b_hi_;
 
 public:
-	DovetailOverlap(int aHang, int bHang, MHAPOverlap& overlap) : _aHang{ aHang }, _bHang{ bHang },
-		MHAPOverlap{ overlap } {
+	DovetailOverlap(int aHang, int bHang, MHAPOverlap& overlap) : MHAPOverlap( overlap ), _aHang { aHang }, _bHang{ bHang } {
 		
 		a_lo_ = _aHang > 0 ? _aHang : 0;
 		a_hi_ = aLength() - (_bHang < 0 ? -_bHang : 0);

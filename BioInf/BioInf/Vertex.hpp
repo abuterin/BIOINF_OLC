@@ -9,6 +9,8 @@ class Edge;
 Class created by Mirela
 */
 class Vertex {
+private:
+	bool _marked = false;
 public:
 	string readString; //ocitanje, reads
 	unsigned int readID;
@@ -52,4 +54,10 @@ public:
 	string getReverseComplement();
 
 	double getCoverage() { return read->coverage(); }
+
+	void removeMarkedEdges(bool propagate = true);
+
+	void mark() { _marked = true; }
+
+	bool isMarked() { return _marked; }
 };

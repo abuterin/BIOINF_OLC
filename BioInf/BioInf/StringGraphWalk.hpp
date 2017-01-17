@@ -1,6 +1,8 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+#include "Edge.hpp"
+#include "Vertex.hpp"
 
 using namespace std;
 

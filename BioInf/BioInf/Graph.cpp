@@ -1,4 +1,7 @@
 ﻿#include "Graph.hpp"
+#include "Edge.hpp"
+#include "StringGraphComponent.hpp"
+#include "StringGraphWalk.hpp"
 
 Graph::Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps) {
 
@@ -23,7 +26,9 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps) 
 		vertices[ovp->bID()]->addEdge(edge_a);
 
 		edge_a->pairId = edge_b->edgeId;
+		edge_a->_pair = edge_b;
 		edge_b->pairId = edge_a->edgeId;
+		edge_a->_pair = edge_b;
 	}
 	//Edge(uint32_t id, uint32_t readId, Overlap* overlap, StringGraph* graph);
 	//Edge(edges_.size(), overlap->a(), overlap, this);
@@ -176,7 +181,10 @@ vector<Walk*> Graph::findBubbles(Vertex* startNode, bool direction, int MAX_STEP
 	cout << "Bubbles popped: " << bubblesPopped << endl;
 
 	for (Walk* walk : walks) {
-		//ovo dovrsiti:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+		for (Edge* edge : walk->pathEdges()) {
+			edge->setInWalk(false);
+			edge->pair()->setInWalk(false);
+		}
 		delete walk;
 	}
 
@@ -201,18 +209,28 @@ unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool
 	Walk* baseWalk;
 	map<unsigned int, unsigned int> edgeUsed; //number of walks using certain edge
 
+	auto getType = [](Edge* edge, unsigned int id) -> int {
+		if (edge->overlap->aID() == id) return 0;
+		if (!edge->overlap->isInnie()) return 0;
+		return 1;
+	};
+
+	auto edgeKey = [](Edge* edge) -> unsigned int {
+		return min(edge->edgeId, edge->pairId);
+	};
+
 	for (Walk* walk : walks) {
 		for (Edge* e : walk->pathEdges()) {
-			edgeUsed[e->edgeId]++;
+			edgeUsed[edgeKey(e)]++;
 		}
 	}
 
-	auto countExternalEdges = [&edgeUsed](Vertex* v, Edge* incomingEdge) -> int {
+	auto countExternalEdges = [&edgeUsed, &edgeKey](Vertex* v, Edge* incomingEdge) -> int {
 		int externalEdges = 0;
 
 		vector<Edge*> vEdges = v->isBeginEdge(incomingEdge) ? v->edges_b : v->edges_e;
 		for (Edge* edge : vEdges) {
-			if (edgeUsed.count(edge->edgeId) == 0) {
+			if (edgeUsed.count(edgeKey(edge)) == 0) {
 				externalEdges++;
 			}
 		}
@@ -224,29 +242,99 @@ unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool
 		int externalEdgesBefore = 0;
 
 		for (Edge* edge : walk->pathEdges()) {
-			if (edge->isInWalk()) {
-				continue;
-			}
+
+			unsigned int key = edgeKey(edge);
+			edgeUsed[key] += externalEdgesBefore;
+
+			Vertex* v = edge->getDst();
+			int newExternalEdges = countExternalEdges(v, edge);
+			edgeUsed[key] += newExternalEdges;
+
+			externalEdgesBefore += newExternalEdges;
 		}
 	}
 
+	vector<string> sequences;
+	size_t selectedWalk = 0;
+	double maxScore = 0;
+
+	size_t i = 0;
+
 	for (Walk* walk : walks) {
-		/*
+
 		double errate = 0;
 		double coverage = 0;
 
 		for (Edge* edge : walk->pathEdges()) {
-		errate += edge->overlap->jaccardScore();
-		coverage += 1;
+			errate += edge->overlap->jaccardScore();
+			coverage += edge->getDst()->getCoverage();
 
-		coverage -= edge->overlap->coveredPercentageReadA();
-		coverage -= edge->overlap->coveredPercentageReadB();
-		}*/
-		if (walk->coverage(direction) > bestCoverage) {
-			bestCoverage = walk->coverage(direction);
-			baseWalk = walk;
+			coverage -= edge->overlap->coveredPercentageReadA();
+			coverage -= edge->overlap->coveredPercentageReadB();
 		}
+		//if (walk->coverage(direction) > bestCoverage) {
+		//	bestCoverage = walk->coverage(direction);
+		//	baseWalk = walk;
+		//}
+		errate /= walk->pathEdges().size();
+
+		double score = (1 - errate) * coverage;
+		if (score > maxScore) {
+			selectedWalk = i;
+			maxScore = score;
+		}
+		i++;
 	}
+
+	for (Walk* walk : walks) {
+		int startInverted = getType(walk->pathEdges().front(), walk->nodes().front()->readID);
+
+		string sequence;
+		walk->extractSequence(sequence);
+
+		sequences.push_back(startInverted ? reverseComplement(sequence) : sequence);
+	}
+
+	bool anyPopped = false;
+
+	for (size_t i = 0; i < sequences.size(); i++) {
+		if (i == selectedWalk) {
+			continue;
+		}
+
+		unsigned int smaller = min(sequences[i].size(), sequences[selectedWalk].size());
+		unsigned int bigger = max(sequences[i].size(), sequences[selectedWalk].size());
+		if ((bigger - smaller) / (double)bigger >= MAX_DIFFERENCE) {
+			continue;
+		}
+
+		int distance = editDistance(sequences[i], sequences[selectedWalk]);
+		if (distance / (double)sequences[selectedWalk].size() >= MAX_DIFFERENCE) {
+			continue;
+		}
+
+		bool popped = false;
+		vector<Edge*> _edges = walks[i]->pathEdges();
+		for (Edge* edge : _edges) {
+			unsigned int key = edgeKey(edge);
+			edgeUsed[key]--;
+
+			if (edgeUsed[key] == 0) {
+				edge->mark();
+				edge->pair()->mark();
+
+				popped = true;
+			}
+		}
+		/*if (popped) {
+			Walk* mainWalk = walks[selectedWalk];
+			for (Edge* e : mainWalk->pathEdges) {
+				//e->overlap->a
+			}
+		}*/
+		anyPopped |= popped;
+	}
+	return anyPopped;
 }
 
 void Graph::simplify() {
@@ -426,11 +514,12 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 }
 
 
-int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
+int Graph::extractUnitigs(std::vector<StringGraphWalk*> walks) {
 
 	uint32_t max_id = 0;
-	for (auto kv : vertices) {
-		max_id = max(kv.second->getId(), max_id);
+	map<unsigned int, Vertex*>::iterator it;
+	for (it = vertices.begin(); it != vertices.end(); it++) {
+		max_id = max(it->second->getId(), max_id);
 	}
 
 	// vertex_id -> unitig_id
@@ -439,16 +528,16 @@ int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
 
 	for (auto kv : vertices) {
 
-		auto vertex = kv.second;
+		Vertex* vertex = kv.second;
 
 		if (unitig_id[vertex->getId()] != NOT_DEFINED) continue;
 
-		debug("UNITIGFIND %d ", vertex->getId());
+//		debug("UNITIGFIND %d ", vertex->getId());
 
 		std::vector<Edge*> edges;
 
 		// mark from vertex to the start of unitig
-		mark_unitig(&edges, &unitig_id, curr_unitig_id, vertex, 0);
+		markUnitig(&edges, &unitig_id, curr_unitig_id, vertex, 0);
 
 		// reverse edges
 		for (int i = 0, n = edges.size(); i < n; ++i) {
@@ -457,17 +546,17 @@ int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
 		std::reverse(edges.begin(), edges.end());
 
 		// mark from here to the end
-		mark_unitig(&edges, &unitig_id, curr_unitig_id, vertex, 1);
+		markUnitig(&edges, &unitig_id, curr_unitig_id, vertex, 1);
 
 		if (edges.size()) {
 
-			walks->emplace_back(new StringGraphWalk(edges.front()->getSrc()));
+			walks.emplace_back(new StringGraphWalk(edges.front()->getSrc()));
 
 			for (auto e : edges) {
-				walks->back()->addEdge(e);
+				walks.back()->addEdge(e);
 			}
 
-			debug("UNITIGFOUND %d edges no %lu\n", vertex->getId(), edges.size());
+//			debug("UNITIGFOUND %d edges no %lu\n", vertex->getId(), edges.size());
 
 			// create next unitig id
 			curr_unitig_id++;
@@ -477,7 +566,7 @@ int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
 	return curr_unitig_id - 1;
 }
 
-int Graph::mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
+int Graph::markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
 	int id, Vertex* start, int start_direction) {
 
 	int marked = 0;
@@ -496,7 +585,7 @@ int Graph::mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_i
 			break;
 		}
 
-		if (edge->getOverlap()->is_innie()) {
+		if (edge->getOverlap()->isInnie()) {
 			use_suffix = 1 - use_suffix;
 		}
 
@@ -518,4 +607,136 @@ int Graph::mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_i
 	}
 
 	return marked;
+}
+
+unsigned char Graph::toUnsignedChar(char c) {
+	unsigned char r;
+
+	switch (c) {
+	case 'A':
+		r = 0;
+		break;
+	case 'T':
+		r = 1;
+		break;
+	case 'G':
+		r = 2;
+		break;
+	case 'C':
+		r = 3;
+		break;
+	default:
+		r = 4;
+		break;
+	}
+
+	return r;
+}
+
+int Graph::editDistance(const string & queryStr, const string & targetStr) {
+	if (queryStr.size() == 0) return targetStr.size();
+	if (targetStr.size() == 0) return queryStr.size();
+
+	unsigned char* query = new unsigned char[queryStr.size()];
+	int queryLength = queryStr.size();
+
+	for (int i = 0; i < queryLength; ++i) {
+		query[i] = toUnsignedChar(queryStr[i]);
+	}
+
+	unsigned char* target = new unsigned char[targetStr.size()];
+	int targetLength = targetStr.size();
+
+	for (int i = 0; i < targetLength; ++i) {
+		target[i] = toUnsignedChar(targetStr[i]);
+	}
+
+	int alphabetLength = 5;
+	int k = -1;
+	int mode = EDLIB_MODE_NW;
+	bool findStartLocations = false;
+	bool findAlignment = false;
+	int score = 0;
+	int* endLocations = nullptr; // dummy
+	int* startLocations = nullptr; // dummy
+	int numLocations = 0; // dummy;
+	unsigned char* alignemnt = nullptr; // dummy
+	int alignmentLength = 0; // dummy;
+
+	edlibCalcEditDistance(query, queryLength, target, targetLength, alphabetLength,
+		k, mode, findStartLocations, findAlignment, &score, &endLocations,
+		&startLocations, &numLocations, &alignemnt, &alignmentLength);
+
+	free(alignemnt);
+	free(startLocations);
+	free(endLocations);
+
+	delete[] target;
+	delete[] query;
+
+	return score;
+}
+
+void Graph::deleteMarked() {
+	deleteMarkedVertices();
+	deleteMarkedEdges();
+}
+
+void Graph::deleteMarkedEdges() {
+	set<int> dirty_vertices;
+	vector<Edge*> removed_edges;
+
+	int confirmed = 0;
+	for (int i = 0, n = edges.size(); i < n; ++i) {
+		Edge* edge = edges[i];
+		if (edge->isMarked()) {
+			dirty_vertices.insert(edge->getSrc()->getId());
+			dirty_vertices.insert(edge->getDst()->getId());
+			removed_edges.push_back(edge);
+			continue;
+		}
+
+		edges[confirmed] = edges[i];
+		confirmed++;
+	}
+	edges.resize(confirmed);
+
+	for (auto idx : dirty_vertices) {
+		auto vertex = getVertex(idx);
+		if (vertex != nullptr) {
+			getVertex(idx)->removeMarkedEdges();
+		}
+	}
+
+	for (Edge* edge : removed_edges) {
+		delete edge;
+	}
+}
+
+void Graph::deleteMarkedVertices() {
+	std::vector<int> for_removal;
+
+	for (auto it : vertices) {
+		Vertex* v = it.second;
+		if (!v->isMarked()) {
+			continue;
+		}
+
+		for (auto edge : v->getEdgesB()) {
+			edge->mark();
+			edge->pair()->mark();
+		}
+		for (auto edge : v->getEdgesE()) {
+			edge->mark();
+			edge->pair()->mark();
+		}
+		for_removal.push_back(v->getId());
+	}
+
+	for (int idx : for_removal) {
+		auto it = vertices.find(idx);
+		auto v = it->second;
+		vertices.erase(it);
+		delete v;
+	}
 }

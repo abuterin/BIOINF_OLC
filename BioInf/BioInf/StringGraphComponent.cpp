@@ -1,4 +1,5 @@
 #include "StringGraphComponent.hpp"
+#include "Graph.hpp"
 using namespace std;
 
 // contig extraction params
@@ -19,7 +20,7 @@ double QUALITY_THRESHOLD = 1.0;
 *************************************************************************************** */
 static int expandVertex(std::vector<Edge*>& dst, Vertex* start, int start_direction, uint32_t maxId, int max_branches) {
 
-	debug("EXPAND %d\n", start->getId());
+//	debug("EXPAND %d\n", start->getId());
 
 	int totalLength = start->getLength();
 	Vertex* vertex = start;
@@ -95,12 +96,12 @@ static int longest_sequence_length(Vertex* from, int direction, std::vector<bool
 	int forks_left) {
 
 	if (forks_left < 0) {
-		debug("STOPEXPAND %d because hit max branches %d\n", from->getId(), MAX_BRANCHES);
+//		debug("STOPEXPAND %d because hit max branches %d\n", from->getId(), MAX_BRANCHES);
 		return 0;
 	}
 
 	if (visited[from->getId()]) {
-		debug("STOPEXPAND %d because visited\n", from->getId());
+//		debug("STOPEXPAND %d because visited\n", from->getId());
 		return 0;
 	}
 
@@ -159,8 +160,8 @@ static int longest_sequence_length(Vertex* from, int direction, std::vector<bool
 }
 
 double overlap_score(MHAPOverlap* overlap) {
-	double quality = 1 - overlap->err_rate();
-	return (overlap->covered_percentage(overlap->aID()) + overlap->covered_percentage(overlap->bID())) * quality;
+	double quality = 1 - overlap->jaccardScore();
+	return (overlap->coveredPercentageReadA() + overlap->coveredPercentageReadB()) * quality;
 };
 
 static int findSingularChain(std::vector<Edge*>* dst, Vertex* start, int start_direction) {
@@ -329,7 +330,7 @@ void StringGraphComponent::extractLongestWalk() {
 		Vertex* start = std::get<0>(startCandidates[i]);
 		int direction = std::get<1>(startCandidates[i]);
 
-		debug("CREATECONTIG from vertex %d\n", start->getId());
+//		debug("CREATECONTIG from vertex %d\n", start->getId());
 
 		std::vector<Edge*> edges;
 		int length = expandVertex(edges, start, direction, maxId, MAX_BRANCHES);
