@@ -116,9 +116,9 @@ bool Graph::trim() {	//as defined in (Vaser, 2015), page 23s
 
 unsigned int Graph::findBubbles(Vertex* startNode, bool direction) {
 	vector<Walk*> walks;
-	vector<unsigned int, unsigned int> endsIn; //endsIn[i] num of paths ending in x
+	map<unsigned int, unsigned int> endsIn; //endsIn[i] num of paths ending in x
 	vector<Edge*> _edges;
-	unsigned int junctionID = NOT_FOUND;
+	int junctionID = NOT_FOUND;
 	unsigned int bubblesPopped = 0;
 
 	if (direction) {//direction == B
@@ -183,7 +183,11 @@ unsigned int Graph::findBubbles(Vertex* startNode, bool direction) {
 
 	for (Walk* walk : walks) {
 		for (Edge* edge : walk->pathEdges()) {
+			if (edge == nullptr)
+				continue;
 			edge->setInWalk(false);
+			if (edge->pair() == nullptr)
+				continue;
 			edge->pair()->setInWalk(false);
 		}
 		delete walk;
@@ -259,7 +263,9 @@ unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool
 		int externalEdgesBefore = 0;
 
 		for (Edge* edge : walk->pathEdges()) {
-
+			if (edge == nullptr) {
+				continue;
+			}
 			unsigned int key = edgeKey(edge);
 			edgeUsed[key] += externalEdgesBefore;
 
@@ -283,6 +289,9 @@ unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool
 		double coverage = 0;
 
 		for (Edge* edge : walk->pathEdges()) {
+			if (edge == nullptr) {
+				continue;
+			}
 			errate += edge->overlap->jaccardScore();
 			coverage += edge->getDst()->getCoverage();
 
@@ -304,6 +313,9 @@ unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool
 	}
 
 	for (Walk* walk : walks) {
+		if (walk->pathEdges().empty() || walk->pathEdges().front() == nullptr) {
+			continue;
+		}
 		int startInverted = getType(walk->pathEdges().front(), walk->nodes().front()->readID);
 
 		string sequence;

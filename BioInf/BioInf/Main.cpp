@@ -29,7 +29,7 @@ void writeOut(ofstream& outputFile, vector<StringGraphWalk*> unitings) {		//add 
 
 int main(int argc, char *argv[]) {
 
-	if (argc != 3) {
+	if (argc != 4) {
 		cerr << "Excpeted three arguments - first name of the .fasta file with reads, then name of the .mhap file and at last the name of the output .fasta file!" << endl;
 		exit(-1);
 	}
@@ -94,8 +94,9 @@ int main(int argc, char *argv[]) {
 			readID = stoi(line, nullptr);
 		}
 		else {
-			pair<unsigned int, Read*> read{ readID, new Read(line, readID) };
-			reads.insert(read);
+			Read* read = new Read(line, readID);
+			//pair<unsigned int, Read*> read{ readID, new Read(line, readID, line) };
+			reads[readID] = read;
 		}
 		sequenceLine = !sequenceLine;
 		
@@ -123,16 +124,20 @@ int main(int argc, char *argv[]) {
 	for (size_t i = 0; i < overlaps.size(); i++) {
 		dovetailOverlaps.push_back(assembler->calculateForcedHangs(*overlaps[i]));
 	}
-
+	cout << "Turned MHAP overlaps to Dovetail overlaps" << endl;
 	assembler->filterContained(dovetailOverlaps, reads);
+	cout << "Filtered contained overlaps" << endl;
 	assembler->filterTransitiveOverlaps(dovetailOverlaps);
+	cout << "Filtered transitive overlaps" << endl;
 	assembler->filterShortOverlaps(dovetailOverlaps, MIN_COVERAGE);	
+	cout << "Filtered short overlaps" << endl;
 	assembler->filterErroneousOverlaps(dovetailOverlaps, MAX_ERROR);
+	cout << "Filtered erroneous overlaps" << endl;
 	//******************************Creates new graph
 	Graph* ourGraph = new Graph(reads, dovetailOverlaps);		
 	ourGraph->simplify();
 
-	vector<StringGraphWalk*>* unitings;
+	vector<StringGraphWalk*>* unitings = new vector<StringGraphWalk*>();
 
 	ourGraph->extractUnitigs(unitings);
 
