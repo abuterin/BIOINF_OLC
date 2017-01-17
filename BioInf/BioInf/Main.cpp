@@ -12,11 +12,11 @@ typedef struct vector<MHAPOverlap*> Overlaps;
 typedef struct vector<DovetailOverlap*> DovetailOverlaps;
 typedef struct map<unsigned int, Read*> Reads;
 
-void writeOut(ofstream outputFile) {		//add unitings as parameters
+void writeOut(ofstream outputFile, Reads reads) {		//add unitings as parameters
 	size_t index = 1;
 	while (true) {				//dok god ima unintinga
 		outputFile << ">contig " << index << endl;
-		outputFile << /*contig <<*/ endl;
+		outputFile << reads[index - 1]->read() << endl;		//test output  (kada prode build)
 		index++;
 	}
 }
