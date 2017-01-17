@@ -4,8 +4,6 @@
 #include "Read.hpp"
 #include "MHAPOverlap.hpp"
 #include "DovetailOverlap.hpp"
-#include "Edge.hpp"
-#include "Vertex.hpp"
 #include "Graph.hpp"
 
 using namespace std;

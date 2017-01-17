@@ -18,6 +18,11 @@ double QUALITY_THRESHOLD = 1.0;
 * Date : Apr 13, 2015
 * Availability : https://github.com/mariokostelac/ra
 *************************************************************************************** */
+
+double overlap_score(DovetailOverlap* overlap); //declaration
+int longest_sequence_length(Vertex* from, int direction, std::vector<bool>& visited,
+	int forks_left); //declaration
+
 static int expandVertex(std::vector<Edge*>& dst, Vertex* start, int start_direction, uint32_t maxId, int max_branches) {
 
 //	debug("EXPAND %d\n", start->getId());
@@ -159,7 +164,7 @@ static int longest_sequence_length(Vertex* from, int direction, std::vector<bool
 	return res_length;
 }
 
-double overlap_score(MHAPOverlap* overlap) {
+double overlap_score(DovetailOverlap* overlap) {
 	double quality = 1 - overlap->jaccardScore();
 	return (overlap->coveredPercentageReadA() + overlap->coveredPercentageReadB()) * quality;
 };
