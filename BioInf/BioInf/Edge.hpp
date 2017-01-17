@@ -21,15 +21,11 @@ public:
 	Graph* graph;
 
 	//unsigned int destinationNode;
-	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph) : _inWalk{ false }, _pair{ nullptr } {
+	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph) : _inWalk{ false }, _pair{ nullptr }, 
+		graph{ gph }, sourceId{ srcId }, edgeId{ _edgeId }, overlap{ _overlap }, labelLength_{ -1 } {
 		//cout << "Constructor called." << endl;
-		graph = gph;
-		sourceId = srcId;
-		edgeId = _edgeId;
-		overlap = _overlap;
-		labelLength_ = -1;
-		source = gph->getVertex(srcId);
-		destiantion = gph->getVertex(overlap->aID() == srcId? overlap->bID(): overlap->aID());
+		source = gph->getVertexById(srcId);
+		destiantion = gph->getVertexById(overlap->aID() == srcId? overlap->bID(): overlap->aID());
 	}
 
 	Vertex* getSrc() {
