@@ -531,7 +531,7 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 }
 
 
-int Graph::extractUnitigs(std::vector<StringGraphWalk*> walks) {
+int Graph::extractUnitigs(vector<StringGraphWalk*>* walks) {
 
 	uint32_t max_id = 0;
 	map<unsigned int, Vertex*>::iterator it;
@@ -567,10 +567,10 @@ int Graph::extractUnitigs(std::vector<StringGraphWalk*> walks) {
 
 		if (edges.size()) {
 
-			walks.emplace_back(new StringGraphWalk(edges.front()->getSrc()));
+			walks->emplace_back(new StringGraphWalk(edges.front()->getSrc()));
 
 			for (Edge* e : edges) {
-				walks.back()->addEdge(e);
+				walks->back()->addEdge(e);
 			}
 
 //			debug("UNITIGFOUND %d edges no %lu\n", vertex->getId(), edges.size());
