@@ -42,7 +42,7 @@ Graph::~Graph() {
 }
 
 Edge* Graph::getEdgeById(unsigned int ID) {
-	for (int i = 0; i < edges.size(); i++) {
+	for (unsigned int i = 0; i < edges.size(); i++) {
 		if (edges[i]->edgeId == ID)
 			return edges[i];
 	}
@@ -80,13 +80,13 @@ bool Graph::trim() {	//as defined in (Vaser, 2015), page 23s
 			if (sizeEdges_b != 0 && sizeEdges_e == 0) {
 				_edges = (it->second)->edges_b;
 			}
-			for (int i = 0; i < _edges.size(); i++) {
+			for (unsigned int i = 0; i < _edges.size(); i++) {
 				//check if the opposing vertex has a similar edge
 				unsigned int overtexId = _edges[i]->opposite(it->first);//opposite vertex ID
 				Vertex* overtex = this->getVertexById(overtexId);
 				vector<Edge*> oedges = _edges[i]->overlap->part(overtexId) == true ? overtex->edges_b : overtex->edges_e;
 				bool isTip = false;
-				for (int j = 0; j < oedges.size(); j++) {
+				for (unsigned int j = 0; j < oedges.size(); j++) {
 					//vertex is a tip only if the vertex on the similar edge is not
 					unsigned int oppID = oedges[j]->opposite(overtexId);
 					Vertex* oppVertex = this->getVertexById(oppID);
@@ -106,7 +106,7 @@ bool Graph::trim() {	//as defined in (Vaser, 2015), page 23s
 
 	if (markedVertices.size() != 0) {
 		changes = true;
-		for (int i = 0; i < markedVertices.size(); i++) {
+		for (unsigned int i = 0; i < markedVertices.size(); i++) {
 			vertices.erase(markedVertices[i]);
 		}
 	}
