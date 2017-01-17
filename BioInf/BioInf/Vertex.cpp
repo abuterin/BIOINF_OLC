@@ -64,3 +64,37 @@ bool Vertex::isBeginEdge(Edge* e) {
 string Vertex::getReverseComplement() {
 	return read->reverseComplement();
 }
+
+void Vertex::removeMarkedEdges(bool propagate) {
+	std::vector<Vertex *> other_vertices;
+
+	for (auto edge = edges_b.begin(); edge != edges_e.end();) {
+
+		if ((*edge)->isMarked()) {
+			if (propagate) {
+				other_vertices.push_back(const_cast<Vertex*>((*edge)->oppositeVertex(readID)));
+			}
+			edge = edges_e.erase(edge);
+		}
+		else {
+			++edge;
+		}
+	}
+
+	for (auto edge = edges_b.begin(); edge != edges_b.end();) {
+
+		if ((*edge)->isMarked()) {
+			if (propagate) {
+				other_vertices.push_back(const_cast<Vertex*>((*edge)->oppositeVertex(readID)));
+			}
+			edge = edges_b.erase(edge);
+		}
+		else {
+			++edge;
+		}
+	}
+
+	for (auto v : other_vertices) {
+		v->removeMarkedEdges(false);
+	}
+}

@@ -62,4 +62,6 @@ public:
 	}
 
 	bool isMarked() { return _marked; }
+
+	Vertex* oppositeVertex(unsigned int id);
 };

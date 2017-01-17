@@ -102,3 +102,12 @@ void Edge::rkLabel(string & dst) {
 		dst += c;
 	}
 }
+
+Vertex * Edge::oppositeVertex(unsigned int id) {
+	if (id == sourceId) {
+		return destiantion;
+	}
+	if (id == destinationId) {
+		return source;
+	}
+}

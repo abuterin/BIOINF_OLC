@@ -52,4 +52,6 @@ public:
 	string getReverseComplement();
 
 	double getCoverage() { return read->coverage(); }
+
+	void removeMarkedEdges(bool propagate = true);
 };
