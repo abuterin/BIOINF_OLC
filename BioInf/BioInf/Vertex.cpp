@@ -34,7 +34,7 @@ bool Vertex::isBubbleRootCandidate(bool direction) {
 	}
 	return false;
 }
-unsigned int Vertex::bestEdge(bool useEnd) { //bool useSuffix = startDirection;
+Edge* Vertex::bestEdge(bool useEnd) { //bool useSuffix = startDirection;
 	auto edges = useEnd ? edges_e : edges_b;
 	if (edges.size() == 0) {
 		return -1;//edge id koji ne postoji
@@ -48,7 +48,7 @@ unsigned int Vertex::bestEdge(bool useEnd) { //bool useSuffix = startDirection;
 			bestLength = currLength;
 		}
 	}
-	return bestEdge->edgeId;
+	return bestEdge;
 }
 
 bool Vertex::isBeginEdge(Edge* e) {

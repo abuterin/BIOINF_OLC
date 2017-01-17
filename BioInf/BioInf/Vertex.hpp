@@ -29,6 +29,10 @@ public:
 	int getLength() {
 		return readString.size();
 	}
+	const string& getSequence() {
+		return read->sequence();
+	}
+
 
 	list<Edge*>& getEdgesB();
 
@@ -40,7 +44,7 @@ public:
 
 	bool isBubbleRootCandidate(bool direction);
 
-	unsigned int bestEdge(bool useEnd);
+	Edge* bestEdge(bool useEnd);
 
 
 	bool isBeginEdge(Edge* e);

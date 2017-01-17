@@ -73,7 +73,7 @@ public:
 		return labelLength_;
 	}
 
-	void label(std::string& dst) {
+	void label(string& dst) {
 
 		if (source->getId() == overlap->aID()) {
 			// from A to B
@@ -83,11 +83,11 @@ public:
 
 				if (overlap->isUsingSuffix(destiantion->getId())) {
 					start = overlap->length(destiantion->getId());
-					len = overlap->b_hang();
+					len = overlap->bHang();
 				}
 				else {
 					start = 0;
-					len = -1 * overlap->a_hang();
+					len = -1 * overlap->aHang();
 				}
 
 			}
@@ -95,15 +95,15 @@ public:
 
 				if (overlap->isUsingSuffix(destiantion->getId())) {
 					start = 0;
-					len = -1 * overlap->a_hang();
+					len = -1 * overlap->aHang();
 				}
 				else {
-					start = overlap->length(dst_->getId());
-					len = overlap->b_hang();
+					start = overlap->length(destiantion->getId());
+					len = overlap->bHang();
 				}
 			}
 
-			dst = (overlap->isInnie() ? destiantion->getReverseComplement() : dst_->getSequence()).substr(start, len);
+			dst = (overlap->isInnie() ? destiantion->getReverseComplement() : destiantion->getSequence()).substr(start, len);
 
 		}
 		else {
@@ -112,14 +112,14 @@ public:
 
 			if (overlap->isUsingSuffix(destiantion->getId())) {
 				start = 0;
-				len = overlap->a_hang();
+				len = overlap->aHang();
 			}
 			else {
-				start = overlap->length(dst_->getId());
-				len = -1 * overlap->b_hang();
+				start = overlap->length(destiantion->getId());
+				len = -1 * overlap->bHang();
 			}
 
-			dst = dst_->getSequence().substr(start, len);
+			dst = destiantion->getSequence().substr(start, len);
 		}
 	}
 };

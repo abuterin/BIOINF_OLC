@@ -291,7 +291,7 @@ void Graph::simplify() {
 
 }
 
-
+/*
 map<unsigned int, vector<Edge*>> Graph::extractingUnitigs() {
 	vector<unsigned int> visitedNodes;
 	map<unsigned int, vector<Edge*>> unitigs;//<start read,overlaps>
@@ -358,9 +358,164 @@ void Graph::getEdges(vector<Edge*>* dst_edges, vector<unsigned int>* visitedNode
 	return;
 	//return marked;
 }
-
+ */
 
 void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
+	
+	uint32_t maxId = 0;
 
+	for (auto kv : vertices) {
+		auto vertex = kv.second;
+		maxId = max(vertex->getId(), maxId);
+	}
+
+	std::vector<bool> used(maxId + 1, false);
+
+	for (auto kv : vertices) {
+		auto vertex = kv.second;
+
+		if (used[vertex->getId()] == true) {
+			continue;
+		}
+
+		std::vector<int> expanded;
+		expanded.emplace_back(vertex->getId());
+
+		std::set<int> componentVertices;
+		componentVertices.insert(vertex->getId());
+
+		while (expanded.size() != 0) {
+
+			std::vector<int> newExpanded;
+
+			for (auto id : expanded) {
+
+				auto eVertex = getVertex(id);
+
+				for (auto edge : eVertex->getEdgesB()) {
+					auto pair = componentVertices.insert(edge->getDst()->getId());
+
+					if (pair.second == true) {
+						newExpanded.emplace_back(edge->getDst()->getId());
+					}
+				}
+
+				for (auto edge : eVertex->getEdgesE()) {
+					auto pair = componentVertices.insert(edge->getDst()->getId());
+
+					if (pair.second == true) {
+						newExpanded.emplace_back(edge->getDst()->getId());
+					}
+				}
+			}
+
+			expanded.swap(newExpanded);
+		}
+
+		for (auto& id : componentVertices) {
+			used[id] = true;
+		}
+
+		dst.emplace_back(new StringGraphComponent(componentVertices, this));
+	}
+
+	fprintf(stderr, "[SG][component extraction]: number of components = %zu\n", dst.size());
+
+	//timer.stop();
+	//timer.print("SG", "component extraction");
 }
 
+
+int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
+
+	uint32_t max_id = 0;
+	for (auto kv : vertices) {
+		max_id = max(kv.second->getId(), max_id);
+	}
+
+	// vertex_id -> unitig_id
+	std::vector<int> unitig_id(max_id + 1, NOT_DEFINED);
+	int curr_unitig_id = 1;
+
+	for (auto kv : vertices) {
+
+		auto vertex = kv.second;
+
+		if (unitig_id[vertex->getId()] != NOT_DEFINED) continue;
+
+		debug("UNITIGFIND %d ", vertex->getId());
+
+		std::vector<Edge*> edges;
+
+		// mark from vertex to the start of unitig
+		mark_unitig(&edges, &unitig_id, curr_unitig_id, vertex, 0);
+
+		// reverse edges
+		for (int i = 0, n = edges.size(); i < n; ++i) {
+			edges[i] = edges[i]->pair();
+		}
+		std::reverse(edges.begin(), edges.end());
+
+		// mark from here to the end
+		mark_unitig(&edges, &unitig_id, curr_unitig_id, vertex, 1);
+
+		if (edges.size()) {
+
+			walks->emplace_back(new StringGraphWalk(edges.front()->getSrc()));
+
+			for (auto e : edges) {
+				walks->back()->addEdge(e);
+			}
+
+			debug("UNITIGFOUND %d edges no %lu\n", vertex->getId(), edges.size());
+
+			// create next unitig id
+			curr_unitig_id++;
+		}
+	}
+
+	return curr_unitig_id - 1;
+}
+
+int Graph::mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
+	int id, Vertex* start, int start_direction) {
+
+	int marked = 0;
+	int use_suffix = start_direction;
+
+	auto curr_vertex = start;
+
+	while (true) {
+		(*unitig_id)[curr_vertex->getId()] = id;
+
+		marked++;
+
+		auto edge = curr_vertex->bestEdge(use_suffix);
+
+		if (edge == nullptr) {
+			break;
+		}
+
+		if (edge->getOverlap()->is_innie()) {
+			use_suffix = 1 - use_suffix;
+		}
+
+		auto next = edge->getDst();
+
+		// if curr and next do not share best overlap
+		if (next->bestEdge(1 - use_suffix)->getOverlap() != edge->getOverlap()) {
+			break;
+		}
+
+		dst_edges->push_back(const_cast<Edge*>(edge));
+
+		// if read is already part of some other unitig
+		if (unitig_id->at(next->getId()) != NOT_DEFINED) {
+			break;
+		}
+
+		curr_vertex = next;
+	}
+
+	return marked;
+}
