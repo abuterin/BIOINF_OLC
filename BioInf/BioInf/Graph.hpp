@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "CommonHeaders.hpp"
 
+#include "edlib.h"
+
 using namespace std;
 
 class Walk;
@@ -69,5 +71,15 @@ public:
 
 	int mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
 		int id, Vertex* start, int start_direction);
+
+	static unsigned char toUnsignedChar(char c);
+
+	int editDistance(const string& queryStr, const string& targetStr);
+
+	void deleteMarked();
+
+	void deleteMarkedEdges();
+
+	void deleteMarkedVertices();
 
 };
