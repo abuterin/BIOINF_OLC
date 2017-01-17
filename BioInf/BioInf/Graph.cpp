@@ -531,7 +531,7 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 }
 
 
-int Graph::extractUnitigs(std::vector<StringGraphWalk*> walks) {
+int Graph::extractUnitigs(std::vector<StringGraphWalk*>* walks) {
 
 	uint32_t max_id = 0;
 	map<unsigned int, Vertex*>::iterator it;

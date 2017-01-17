@@ -76,7 +76,7 @@ public:
 	void extractComponents(vector<StringGraphComponent*>& dst); 
 	
 
-	int extractUnitigs(std::vector<StringGraphWalk*> walks);
+	int extractUnitigs(std::vector<StringGraphWalk*>* walks);
 
 	int markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
 		int id, Vertex* start, int start_direction);
