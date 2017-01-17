@@ -201,6 +201,12 @@ unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool
 	Walk* baseWalk;
 	map<unsigned int, unsigned int> edgeUsed; //number of walks using certain edge
 
+	auto getType = [](Edge* edge, unsigned int id) -> int {
+		if (edge->overlap->aID() == id) return 0;
+		if (!edge->overlap->isInnie()) return 0;
+		return 1;
+	};
+
 	for (Walk* walk : walks) {
 		for (Edge* e : walk->pathEdges()) {
 			edgeUsed[e->edgeId]++;
@@ -224,27 +230,69 @@ unsigned int Graph::popBubble(vector<Walk*> walks, unsigned int junctionID, bool
 		int externalEdgesBefore = 0;
 
 		for (Edge* edge : walk->pathEdges()) {
-			if (edge->isInWalk()) {
-				continue;
-			}
+
+			edgeUsed[edge->edgeId] += externalEdgesBefore;
+
+			Vertex* v = vertices[edge->getDestinationNode()];
+			int newExternalEdges = countExternalEdges(v, edge);
+			edgeUsed[edge->edgeId] += newExternalEdges;
+
+			externalEdgesBefore += newExternalEdges;
 		}
 	}
 
+	vector<string> sequences;
+	size_t selectedWalk = 0;
+	double maxScore = 0;
+
+	size_t i = 0;
+
 	for (Walk* walk : walks) {
-		/*
+
 		double errate = 0;
 		double coverage = 0;
 
 		for (Edge* edge : walk->pathEdges()) {
-		errate += edge->overlap->jaccardScore();
-		coverage += 1;
+			errate += edge->overlap->jaccardScore();
+			coverage += edge->getDst()->getCoverage();
 
-		coverage -= edge->overlap->coveredPercentageReadA();
-		coverage -= edge->overlap->coveredPercentageReadB();
-		}*/
-		if (walk->coverage(direction) > bestCoverage) {
-			bestCoverage = walk->coverage(direction);
-			baseWalk = walk;
+			coverage -= edge->overlap->coveredPercentageReadA();
+			coverage -= edge->overlap->coveredPercentageReadB();
+		}
+		//if (walk->coverage(direction) > bestCoverage) {
+		//	bestCoverage = walk->coverage(direction);
+		//	baseWalk = walk;
+		//}
+		errate /= walk->pathEdges().size();
+
+		double score = (1 - errate) * coverage;
+		if (score > maxScore) {
+			selectedWalk = i;
+			maxScore = score;
+		}
+		i++;
+	}
+
+	for (Walk* walk : walks) {
+		int startInverted = getType(walk->pathEdges().front(), walk->nodes().front()->readID);
+
+		string sequence;
+		walk->extractSequence(sequence);
+
+		sequences.push_back(startInverted ? reverseComplement(sequence) : sequence);
+	}
+
+	bool anyPopped = false;
+
+	for (size_t i = 0; i < sequences.size(); i++) {
+		if (i == selectedWalk) {
+			continue;
+		}
+
+		unsigned int smaller = min(sequences[i].size(), sequences[selectedWalk].size());
+		unsigned int bigger = max(sequences[i].size(), sequences[selectedWalk].size());
+		if ((bigger - smaller) / (double)bigger >= MAX_DIFFERENCE) {
+
 		}
 	}
 }
