@@ -29,6 +29,10 @@ public:
 	int getLength() {
 		return readString.size();
 	}
+	const string& getSequence() {
+		return read->sequence();
+	}
+
 
 	list<Edge*>& getEdgesB();
 

@@ -11,9 +11,9 @@
 #include <fstream>
 #include <string>
 #include <set>
-
 #include "Read.hpp"
 #include "MHAPOverlap.hpp"
+
 #include "DovetailOverlap.hpp"
 #include "Assembler.hpp"
 #include "Edge.hpp"
