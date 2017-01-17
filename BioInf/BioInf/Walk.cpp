@@ -162,7 +162,7 @@ void Walk::extractSequence(string &dest) {
 	int prevType = startType;
 
 	for (Edge* e : _pathEdges) {
-		int type = getType(e, e->sourceNode);
+		int type = getType(e, e->sourceId);
 
 		bool invert = type == prevType ? false : true;
 
