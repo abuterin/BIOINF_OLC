@@ -178,7 +178,10 @@ vector<Walk*> Graph::findBubbles(Vertex* startNode, bool direction, int MAX_STEP
 	cout << "Bubbles popped: " << bubblesPopped << endl;
 
 	for (Walk* walk : walks) {
-		//ovo dovrsiti:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+		for (Edge* edge : walk->pathEdges()) {
+			edge->setInWalk(false);
+			edge->pair()->setInWalk(false);
+		}
 		delete walk;
 	}
 
@@ -508,7 +511,7 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 }
 
 
-int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
+int Graph::extractUnitigs(std::vector<StringGraphWalk*>* walks) {
 
 	uint32_t max_id = 0;
 	for (auto kv : vertices) {
@@ -530,7 +533,7 @@ int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
 		std::vector<Edge*> edges;
 
 		// mark from vertex to the start of unitig
-		mark_unitig(&edges, &unitig_id, curr_unitig_id, vertex, 0);
+		markUnitig(&edges, &unitig_id, curr_unitig_id, vertex, 0);
 
 		// reverse edges
 		for (int i = 0, n = edges.size(); i < n; ++i) {
@@ -539,7 +542,7 @@ int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
 		std::reverse(edges.begin(), edges.end());
 
 		// mark from here to the end
-		mark_unitig(&edges, &unitig_id, curr_unitig_id, vertex, 1);
+		markUnitig(&edges, &unitig_id, curr_unitig_id, vertex, 1);
 
 		if (edges.size()) {
 
@@ -559,7 +562,7 @@ int Graph::extract_unitigs(std::vector<StringGraphWalk*>* walks) {
 	return curr_unitig_id - 1;
 }
 
-int Graph::mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
+int Graph::markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
 	int id, Vertex* start, int start_direction) {
 
 	int marked = 0;
