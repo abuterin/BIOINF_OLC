@@ -5,24 +5,24 @@
 	Made by  Ante
 */
 class MHAPOverlap {
-private:
-	unsigned int _aID;		//ID of read A
-	unsigned int _bID;		//ID of read B
+protected:
 	double _jaccardScore;
 	unsigned int _sharedMinMers;
 	bool _aForward;	//true - A forward, false - A reversed complement
 	unsigned int _aStart;
 	unsigned int _aEnd;
-	unsigned int _aLength;
 	bool _bForward;	//true - B forward, false - B reversed complement
 	unsigned int _bStart;
 	unsigned int _bEnd;
-	unsigned int _bLength;
 	unsigned int _overlapLength;
 
 	bool _positionA;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
 	bool _positionB;			//as defined in (Rahle, 2014), page 15s -> true - begining, false - end
 
+	unsigned int _aID;		//ID of read A
+	unsigned int _bID;		//ID of read B
+	unsigned int _aLength;
+	unsigned int _bLength;
 public:
 	MHAPOverlap(unsigned int Aid, unsigned int Bid, double jaccardScore, unsigned int sharedMinMers, bool Afwd,
 		unsigned int Astart, unsigned int Aend, unsigned int Alen, bool Bfwd, unsigned int Bstart, unsigned int Bend,
@@ -56,7 +56,6 @@ public:
 			return suffixB();
 	}
 
-	bool isUsingSuffix(unsigned int);
 
 	unsigned int overlapLength() { return _overlapLength; }
 
@@ -67,6 +66,7 @@ public:
 			return bLength();
 	}
 	bool isInnie();
+
 
 	friend std::ostream& operator<<(std::ostream& output, MHAPOverlap o) {
 		output << o._aID << " " << o._bID << " " << o._jaccardScore << " " << o._sharedMinMers << " " << (o._aForward ? 0 : 1) << " "

@@ -1,4 +1,5 @@
 ﻿#include "Vertex.hpp"
+#include "Edge.hpp"
 
 list<Edge*>& Vertex::getEdgesB() {
 	list<Edge*> edgesB;
@@ -34,10 +35,10 @@ bool Vertex::isBubbleRootCandidate(bool direction) {
 	}
 	return false;
 }
-unsigned int Vertex::bestEdge(bool useEnd) { //bool useSuffix = startDirection;
+Edge* Vertex::bestEdge(bool useEnd) { //bool useSuffix = startDirection;
 	auto edges = useEnd ? edges_e : edges_b;
 	if (edges.size() == 0) {
-		return -1;//edge id koji ne postoji
+		return nullptr;//edge id koji ne postoji
 	}
 	Edge* bestEdge = edges.front();//prvi element u vektoru
 	int bestLength = bestEdge->overlap->getLength(readID);//dužina očitanja u preklapanju
@@ -48,7 +49,7 @@ unsigned int Vertex::bestEdge(bool useEnd) { //bool useSuffix = startDirection;
 			bestLength = currLength;
 		}
 	}
-	return bestEdge->edgeId;
+	return bestEdge;
 }
 
 bool Vertex::isBeginEdge(Edge* e) {
@@ -63,4 +64,38 @@ bool Vertex::isBeginEdge(Edge* e) {
 
 string Vertex::getReverseComplement() {
 	return read->reverseComplement();
+}
+
+void Vertex::removeMarkedEdges(bool propagate) {
+	std::vector<Vertex *> other_vertices;
+
+	for (auto edge = edges_b.begin(); edge != edges_e.end();) {
+
+		if ((*edge)->isMarked()) {
+			if (propagate) {
+				other_vertices.push_back(const_cast<Vertex*>((*edge)->oppositeVertex(readID)));
+			}
+			edge = edges_e.erase(edge);
+		}
+		else {
+			++edge;
+		}
+	}
+
+	for (auto edge = edges_b.begin(); edge != edges_b.end();) {
+
+		if ((*edge)->isMarked()) {
+			if (propagate) {
+				other_vertices.push_back(const_cast<Vertex*>((*edge)->oppositeVertex(readID)));
+			}
+			edge = edges_b.erase(edge);
+		}
+		else {
+			++edge;
+		}
+	}
+
+	for (auto v : other_vertices) {
+		v->removeMarkedEdges(false);
+	}
 }

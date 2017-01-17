@@ -1,6 +1,9 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+#include "Edge.hpp"
+class Graph;
+
 using namespace std;
 
 class Vertex;

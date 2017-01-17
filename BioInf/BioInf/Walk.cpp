@@ -1,4 +1,5 @@
 #include "Walk.hpp"
+#include "Graph.hpp"
 
 void Walk::addNode(Vertex * newNode) {
 	_nodes.push_back(newNode); 
@@ -153,7 +154,33 @@ void Walk::extractSequence(string &dest) {
 
 	int startType = getType(_pathEdges.front(), _nodes.front()->readID);
 
-	bool appendToPrefix = (!_pathEdges.front()->overlap->isUsingSuffix(_nodes.front()->readID)) ^ startType;
+	bool appendToPrefix = (!_pathEdges.front()->overlap->isUsingSuffix(_nodes.front()->readID)) ^ startType; //isUssingPrefix
 
+	string startSequence = string(startType ? _nodes.front()->getReverseComplement() : _nodes.front()->readString);
 
+	dest = appendToPrefix ? string(startSequence.rbegin(), startSequence.rend()) : startSequence;
+
+	int prevType = startType;
+
+	for (Edge* e : _pathEdges) {
+		int type = getType(e, e->sourceId);
+
+		bool invert = type == prevType ? false : true;
+
+		string label;
+		if (invert) {
+			e->rkLabel(label);
+		}
+		else {
+			e->label(label);
+		}
+
+		dest += appendToPrefix ? string(label.rbegin(), label.rend()) : label;
+
+		prevType = getType(e, e->destinationId) ^ invert;
+	}
+
+	if (appendToPrefix) {
+		dest = string(dest.rbegin(), dest.rend());
+	}
 }

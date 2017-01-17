@@ -1,20 +1,35 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+#include "Read.hpp"
+#include "MHAPOverlap.hpp"
+#include "DovetailOverlap.hpp"
+#include "Graph.hpp"
+
 using namespace std;
 
 typedef struct vector<MHAPOverlap*> Overlaps;
+typedef struct vector<DovetailOverlap*> DovetailOverlaps;
 typedef struct map<unsigned int, Read*> Reads;
+
+void writeOut(ofstream outputFile, Reads reads) {		//add unitings as parameters
+	size_t index = 1;
+	while (true) {				//dok god ima unintinga
+		outputFile << ">contig " << index << endl;
+		outputFile << reads[index - 1]->read() << endl;		//test output  (kada prode build)
+		index++;
+	}
+}
 
 int main(int argc, char *argv[]) {
 
 	if (argc != 3) {
-		cerr << "Excpeted two argument - first name of the .fasta file and then name of the .mhap file!" << endl;
+		cerr << "Excpeted three arguments - first name of the .fasta file with reads, then name of the .mhap file and at last the name of the output .fasta file!" << endl;
 		exit(-1);
 	}
 
 	if (strstr(argv[1], ".fasta") == nullptr) {
-		cerr << "Wrong file format - expected .mhap file!" << endl;
+		cerr << "Wrong file format - expected .fasta file!" << endl;
 		exit(-1);
 	}
 
@@ -22,9 +37,15 @@ int main(int argc, char *argv[]) {
 		cerr << "Wrong file format - expected .mhap file!" << endl;
 		exit(-1);
 	}
+
+	if (strstr(argv[3], ".fasta") == nullptr) {
+		cerr << "Wrong file format - expected .fasta file!" << endl;
+		exit(-1);
+	}
 	
 	ifstream fastaFile(argv[1]);
 	FILE* mhapFile;
+	ofstream outputFile(argv[3]);
 	fopen_s(&mhapFile, argv[2], "r");
 	/*ofstream outFile;
 	outFile.open("results.mhap");
@@ -37,12 +58,12 @@ int main(int argc, char *argv[]) {
 		cerr << "Couldn't open " << argv[2] << endl;
 		exit(-1);
 	}
-	/*
-	if (!outFile.is_open()) {
-		cerr << "Couldn't open results.mhap" << endl;
+	
+	if (!outputFile.is_open()) {
+		cerr << "Couldn't open " << argv[3] << endl;
 		exit(-1);
 	}
-	*/
+	
 	string line;
 	bool sequenceLine = false; //true if next line to be read is sequence line, false if it is ID line
 	unsigned int readID;
@@ -89,9 +110,9 @@ int main(int argc, char *argv[]) {
 	fclose(mhapFile);
 	/*outFile.close();*/
 
-
+	DovetailOverlaps dovetailOverlaps;
 	//******************************
-	Graph ourGraph(reads,overlaps);
+	Graph ourGraph(reads, dovetailOverlaps);		
 	ourGraph.simplify();
 
 	for (size_t i = 0; i < reads.size(); i++) {
@@ -101,6 +122,8 @@ int main(int argc, char *argv[]) {
 		delete temp;
 	}
 	overlaps.clear();
+
+	outputFile.close();
 
 	return 0;
 }

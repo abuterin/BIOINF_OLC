@@ -6,7 +6,7 @@ StringGraphWalk::StringGraphWalk(Vertex* start) :start_(start) {
 void StringGraphWalk::addEdge(Edge* edge) {
 
 	edges_.emplace_back(edge);
-	visitedVertices_.insert(edge->getDestinationNode());
+	visitedVertices_.insert(edge->getDst()->getId());
 	visitedEdges_.insert(edge->edgeId);
 }
 
@@ -26,7 +26,7 @@ void StringGraphWalk::extractSequence(std::string& dst) {
 
 	int startType = getType(edges_.front(), start_->getId());
 
-	bool appendToPrefix = edges_.front()->overlap->is_using_prefix(start_->readID) ^ startType;
+	bool appendToPrefix = edges_.front()->overlap->isUsingPrefix(start_->readID) ^ startType;
 
 	std::string startSequence = std::string(startType ? start_->getReverseComplement() : start_->getSequence());
 
