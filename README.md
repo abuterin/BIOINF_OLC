@@ -1,5 +1,5 @@
 ## Requirements
-- Microsoft Visual Studio 
+- Microsoft Visual Studio (IDE for easyest editing and debugging)
 
 
 ## Installation
