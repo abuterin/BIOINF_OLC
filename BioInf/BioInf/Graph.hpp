@@ -30,6 +30,7 @@ class Graph {
 public:
 	map<unsigned int, Vertex*> vertices;//Nodes 
 	vector<Edge*> edges;
+
 	Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps);
 	
 	~Graph();
@@ -67,9 +68,9 @@ public:
 	void extractComponents(vector<StringGraphComponent*>& dst); 
 	
 
-	int extract_unitigs(std::vector<StringGraphWalk*>* walks);
+	int extractUnitigs(std::vector<StringGraphWalk*>* walks);
 
-	int mark_unitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
+	int markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
 		int id, Vertex* start, int start_direction);
 
 	static unsigned char toUnsignedChar(char c);
