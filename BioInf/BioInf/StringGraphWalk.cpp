@@ -6,7 +6,7 @@ StringGraphWalk::StringGraphWalk(Vertex* start) :start_(start) {
 void StringGraphWalk::addEdge(Edge* edge) {
 
 	edges_.emplace_back(edge);
-	visitedVertices_.insert(edge->getDestinationNode());
+	visitedVertices_.insert(edge->getDst()->getId());
 	visitedEdges_.insert(edge->edgeId);
 }
 

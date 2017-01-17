@@ -45,15 +45,7 @@ _bLength{ overlap.bLength() } {
 	_overlapLength = _aEnd - _aStart;		//aproximate length
 }
 
-bool MHAPOverlap::isUsingSuffix(unsigned int readID) {
-	if (readID == _aID) {
-		return !_positionA;			//opposite of _positionA value - true if it is suffx, false if it is prefix
-	}
-	else if (readID == _bID) {
-		return !_positionB;			//opposite of _positionA value - true if it is suffx, false if it is prefix
-	}
-	return false;
-}
+
 
 bool MHAPOverlap::isInnie() {
 	return _aForward == !_bForward; //if A and B directions are opposite

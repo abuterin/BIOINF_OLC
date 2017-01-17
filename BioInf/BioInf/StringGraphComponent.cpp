@@ -36,7 +36,7 @@ static int expandVertex(std::vector<Edge*>& dst, Vertex* start, int start_direct
 		Edge* best_edge = nullptr;
 		if (edges.size() == 1) {
 
-			if (!visitedVertices[edges.front()->getDestinationNode()]) {
+			if (!visitedVertices[edges.front()->destinationId]) {
 				best_edge = edges.front();
 			}
 
@@ -114,7 +114,7 @@ static int longest_sequence_length(Vertex* from, int direction, std::vector<bool
 
 		auto& edge = edges.front();
 		res_length += edge->labelLength();
-		res_length += longest_sequence_length(edge->getDst(), edge->getOverlap()->is_innie() ?
+		res_length += longest_sequence_length(edge->getDst(), edge->getOverlap()->isInnie() ?
 			(direction ^ 1) : direction, visited, forks_left);
 
 	}
@@ -137,7 +137,7 @@ static int longest_sequence_length(Vertex* from, int direction, std::vector<bool
 			auto curr_qual = overlap_score(edge->getOverlap());
 
 			if (curr_qual >= qual_lo) {
-				int curr_len = longest_sequence_length(edge->getDst(), edge->getOverlap()->is_innie() ? (direction ^ 1) :
+				int curr_len = longest_sequence_length(edge->getDst(), edge->getOverlap()->isInnie() ? (direction ^ 1) :
 					direction, visited, forks_left - 1);
 
 				if (curr_len > best_len) {
@@ -190,7 +190,7 @@ static int findSingularChain(std::vector<Edge*>* dst, Vertex* start, int start_d
 
 		totalLength += selectedEdge->labelLength();
 
-		if (selectedEdge->getOverlap()->is_innie()) {
+		if (selectedEdge->getOverlap()->isInnie()) {
 			curr_direction ^= 1;
 		}
 	}
@@ -216,7 +216,7 @@ static int countForks(Vertex* start, int start_direction, int depth) {
 
 	for (auto e : edges) {
 		curr_vertex = e->getDst();
-		if (e->getOverlap()->is_innie()) {
+		if (e->getOverlap()->isInnie()) {
 			curr_direction ^= 1;
 		}
 
