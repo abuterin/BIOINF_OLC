@@ -7,6 +7,10 @@ using namespace std;
 Class created by Mirela
 */
 class Edge {
+private:
+	bool _marked = false; //marked for deletion
+	bool _inWalk;
+
 public:
 	int edgeId;
 	DovetailOverlap* overlap;
@@ -16,10 +20,9 @@ public:
 	unsigned int destinationId;
 	unsigned int pairId;
 	Edge* _pair;
-	bool _inWalk;
+
 	int labelLength_;
 	Graph* graph;
-	bool _marked = false; //marked for deletion
 
 	//unsigned int destinationNode;
 	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph) : _inWalk{ false }, _pair{ nullptr }, 
