@@ -1,4 +1,5 @@
 ﻿#include "Vertex.hpp"
+#include "Edge.hpp"
 
 list<Edge*>& Vertex::getEdgesB() {
 	list<Edge*> edgesB;
@@ -37,7 +38,7 @@ bool Vertex::isBubbleRootCandidate(bool direction) {
 Edge* Vertex::bestEdge(bool useEnd) { //bool useSuffix = startDirection;
 	auto edges = useEnd ? edges_e : edges_b;
 	if (edges.size() == 0) {
-		return -1;//edge id koji ne postoji
+		return nullptr;//edge id koji ne postoji
 	}
 	Edge* bestEdge = edges.front();//prvi element u vektoru
 	int bestLength = bestEdge->overlap->getLength(readID);//dužina očitanja u preklapanju

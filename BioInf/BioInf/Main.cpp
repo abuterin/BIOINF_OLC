@@ -1,6 +1,13 @@
 #pragma once
 #include "CommonHeaders.hpp"
 
+#include "Read.hpp"
+#include "MHAPOverlap.hpp"
+#include "DovetailOverlap.hpp"
+#include "Edge.hpp"
+#include "Vertex.hpp"
+#include "Graph.hpp"
+
 using namespace std;
 
 typedef struct vector<MHAPOverlap*> Overlaps;
@@ -92,7 +99,7 @@ int main(int argc, char *argv[]) {
 
 	DovetailOverlaps dovetailOverlaps;
 	//******************************
-	Graph ourGraph(reads, dovetailOverlaps);		//replace overlaps with dovetailOverlaps!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	Graph ourGraph(reads, dovetailOverlaps);		
 	ourGraph.simplify();
 
 	for (size_t i = 0; i < reads.size(); i++) {

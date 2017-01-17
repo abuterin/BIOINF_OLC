@@ -1,4 +1,7 @@
 ﻿#include "Graph.hpp"
+#include "Edge.hpp"
+#include "StringGraphComponent.hpp"
+#include "StringGraphWalk.hpp"
 
 Graph::Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps) {
 
@@ -511,11 +514,12 @@ void Graph::extractComponents(vector<StringGraphComponent*>& dst) {
 }
 
 
-int Graph::extractUnitigs(std::vector<StringGraphWalk*>* walks) {
+int Graph::extractUnitigs(std::vector<StringGraphWalk*> walks) {
 
 	uint32_t max_id = 0;
-	for (auto kv : vertices) {
-		max_id = max(kv.second->getId(), max_id);
+	map<unsigned int, Vertex*>::iterator it;
+	for (it = vertices.begin(); it != vertices.end(); it++) {
+		max_id = max(it->second->getId(), max_id);
 	}
 
 	// vertex_id -> unitig_id
@@ -524,11 +528,11 @@ int Graph::extractUnitigs(std::vector<StringGraphWalk*>* walks) {
 
 	for (auto kv : vertices) {
 
-		auto vertex = kv.second;
+		Vertex* vertex = kv.second;
 
 		if (unitig_id[vertex->getId()] != NOT_DEFINED) continue;
 
-		debug("UNITIGFIND %d ", vertex->getId());
+//		debug("UNITIGFIND %d ", vertex->getId());
 
 		std::vector<Edge*> edges;
 
@@ -546,13 +550,13 @@ int Graph::extractUnitigs(std::vector<StringGraphWalk*>* walks) {
 
 		if (edges.size()) {
 
-			walks->emplace_back(new StringGraphWalk(edges.front()->getSrc()));
+			walks.emplace_back(new StringGraphWalk(edges.front()->getSrc()));
 
 			for (auto e : edges) {
-				walks->back()->addEdge(e);
+				walks.back()->addEdge(e);
 			}
 
-			debug("UNITIGFOUND %d edges no %lu\n", vertex->getId(), edges.size());
+//			debug("UNITIGFOUND %d edges no %lu\n", vertex->getId(), edges.size());
 
 			// create next unitig id
 			curr_unitig_id++;
@@ -581,7 +585,7 @@ int Graph::markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id
 			break;
 		}
 
-		if (edge->getOverlap()->is_innie()) {
+		if (edge->getOverlap()->isInnie()) {
 			use_suffix = 1 - use_suffix;
 		}
 

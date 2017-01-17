@@ -1,4 +1,12 @@
 #include "Edge.hpp"
+#include "Graph.hpp"
+
+Edge::Edge(int _edgeId, DovetailOverlap * _overlap, unsigned int srcId, Graph * gph) : _inWalk{ false }, _pair{ nullptr },
+graph{ gph }, sourceId{ srcId }, edgeId{ _edgeId }, overlap{ _overlap }, labelLength_{ -1 } {
+	//cout << "Constructor called." << endl;
+	source = gph->getVertexById(srcId);
+	destination = gph->getVertexById(overlap->aID() == srcId ? overlap->bID() : overlap->aID());
+}
 
 unsigned int Edge::opposite(unsigned int vertexID) {
 	if (overlap->aID() == vertexID) {
@@ -30,8 +38,8 @@ void Edge::label(string & dst) {
 
 		if (overlap->isInnie()) {
 
-			if (overlap->isUsingSuffix(destiantion->getId())) {
-				start = overlap->length(destiantion->getId());
+			if (overlap->isUsingSuffix(destination->getId())) {
+				start = overlap->length(destination->getId());
 				len = overlap->bHang();
 			}
 			else {
@@ -42,33 +50,33 @@ void Edge::label(string & dst) {
 		}
 		else {
 
-			if (overlap->isUsingSuffix(destiantion->getId())) {
+			if (overlap->isUsingSuffix(destination->getId())) {
 				start = 0;
 				len = -1 * overlap->aHang();
 			}
 			else {
-				start = overlap->length(destiantion->getId());
+				start = overlap->length(destination->getId());
 				len = overlap->bHang();
 			}
 		}
 
-		dst = (overlap->isInnie() ? destiantion->getReverseComplement() : destiantion->getSequence()).substr(start, len);
+		dst = (overlap->isInnie() ? destination->getReverseComplement() : destination->getSequence()).substr(start, len);
 
 	}
 	else {
 		// from B to A
 		int start, len;
 
-		if (overlap->isUsingSuffix(destiantion->getId())) {
+		if (overlap->isUsingSuffix(destination->getId())) {
 			start = 0;
 			len = overlap->aHang();
 		}
 		else {
-			start = overlap->length(destiantion->getId());
+			start = overlap->length(destination->getId());
 			len = -1 * overlap->bHang();
 		}
 
-		dst = destiantion->getSequence().substr(start, len);
+		dst = destination->getSequence().substr(start, len);
 	}
 }
 
@@ -105,7 +113,7 @@ void Edge::rkLabel(string & dst) {
 
 Vertex * Edge::oppositeVertex(unsigned int id) {
 	if (id == sourceId) {
-		return destiantion;
+		return destination;
 	}
 	if (id == destinationId) {
 		return source;

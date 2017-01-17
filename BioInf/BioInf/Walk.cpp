@@ -1,4 +1,5 @@
 #include "Walk.hpp"
+#include "Graph.hpp"
 
 void Walk::addNode(Vertex * newNode) {
 	_nodes.push_back(newNode); 

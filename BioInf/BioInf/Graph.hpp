@@ -2,10 +2,15 @@
 #include "CommonHeaders.hpp"
 
 #include "edlib.h"
+#include "Walk.hpp"
+
 
 using namespace std;
 
+class StringGraphComponent;
+class StringGraphWalk;
 class Walk;
+class Edge;
 
 int MAX_NODES = 160;
 int MAX_DISTANCE = MAX_NODES * 10000;
@@ -68,7 +73,7 @@ public:
 	void extractComponents(vector<StringGraphComponent*>& dst); 
 	
 
-	int extractUnitigs(std::vector<StringGraphWalk*>* walks);
+	int extractUnitigs(std::vector<StringGraphWalk*> walks);
 
 	int markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id,
 		int id, Vertex* start, int start_direction);

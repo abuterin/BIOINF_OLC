@@ -1,5 +1,10 @@
 #pragma once
-#include "CommonHeaders.hpp"
+//#include "CommonHeaders.hpp"
+
+#include "Vertex.hpp"
+#include "DovetailOverlap.hpp"
+
+class Graph;
 
 using namespace std;
 
@@ -15,7 +20,7 @@ public:
 	int edgeId;
 	DovetailOverlap* overlap;
 	Vertex* source;
-	Vertex* destiantion;
+	Vertex* destination;
 	unsigned int sourceId;
 	unsigned int destinationId;
 	unsigned int pairId;
@@ -25,18 +30,13 @@ public:
 	Graph* graph;
 
 	//unsigned int destinationNode;
-	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph) : _inWalk{ false }, _pair{ nullptr }, 
-		graph{ gph }, sourceId{ srcId }, edgeId{ _edgeId }, overlap{ _overlap }, labelLength_{ -1 } {
-		//cout << "Constructor called." << endl;
-		source = gph->getVertexById(srcId);
-		destiantion = gph->getVertexById(overlap->aID() == srcId? overlap->bID(): overlap->aID());
-	}
+	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph);
 
 	Vertex* getSrc() {
 		return source;
 	}
 	Vertex* getDst() {
-		return destiantion;
+		return destination;
 	}
 
 	DovetailOverlap* getOverlap() {
