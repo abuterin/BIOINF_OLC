@@ -4,7 +4,12 @@
 #include "Read.hpp"
 #include "MHAPOverlap.hpp"
 #include "DovetailOverlap.hpp"
+#include "Assembler.hpp"
+#include "StringGraphWalk.hpp"
 #include "Graph.hpp"
+
+#define MIN_COVERAGE (0.15)
+#define MAX_ERROR (0.35)
 
 using namespace std;
 
@@ -12,12 +17,13 @@ typedef struct vector<MHAPOverlap*> Overlaps;
 typedef struct vector<DovetailOverlap*> DovetailOverlaps;
 typedef struct map<unsigned int, Read*> Reads;
 
-void writeOut(ofstream outputFile, Reads reads) {		//add unitings as parameters
-	size_t index = 1;
-	while (true) {				//dok god ima unintinga
-		outputFile << ">contig " << index << endl;
-		outputFile << reads[index - 1]->read() << endl;		//test output  (kada prode build)
-		index++;
+void writeOut(ofstream& outputFile, vector<StringGraphWalk*> unitings) {		//add unitings as parameters
+
+	for (size_t i = 0; i < unitings.size(); i++) {				//dok god ima unintinga
+		string dst;
+		unitings[i]->extractSequence(dst);
+		outputFile << ">contig " << i + 1 << endl;
+		outputFile << dst << endl;		//test output  (kada prode build)
 	}
 }
 
@@ -111,9 +117,26 @@ int main(int argc, char *argv[]) {
 	/*outFile.close();*/
 
 	DovetailOverlaps dovetailOverlaps;
-	//******************************
-	Graph ourGraph(reads, dovetailOverlaps);		
-	ourGraph.simplify();
+	Assembler* assembler = Assembler::getAssembler();
+	
+	//convert MHAPOverlaps to DovetailOverlaps
+	for (size_t i = 0; i < overlaps.size(); i++) {
+		dovetailOverlaps.push_back(assembler->calculateForcedHangs(*overlaps[i]));
+	}
+
+	assembler->filterContained(dovetailOverlaps, reads);
+	assembler->filterTransitiveOverlaps(dovetailOverlaps);
+	assembler->filterShortOverlaps(dovetailOverlaps, MIN_COVERAGE);	
+	assembler->filterErroneousOverlaps(dovetailOverlaps, MAX_ERROR);
+	//******************************Creates new graph
+	Graph* ourGraph = new Graph(reads, dovetailOverlaps);		
+	ourGraph->simplify();
+
+	vector<StringGraphWalk*>* unitings;
+
+	ourGraph->extractUnitigs(unitings);
+
+	writeOut(outputFile, *unitings);
 
 	for (size_t i = 0; i < reads.size(); i++) {
 		delete reads[i];
@@ -124,6 +147,9 @@ int main(int argc, char *argv[]) {
 	overlaps.clear();
 
 	outputFile.close();
+
+	delete ourGraph;
+	delete assembler;
 
 	return 0;
 }
