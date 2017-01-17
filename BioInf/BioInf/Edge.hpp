@@ -19,6 +19,7 @@ public:
 	bool _inWalk;
 	int labelLength_;
 	Graph* graph;
+	bool _marked = false; //marked for deletion
 
 	//unsigned int destinationNode;
 	Edge(int _edgeId, DovetailOverlap* _overlap, unsigned int srcId, Graph* gph) : _inWalk{ false }, _pair{ nullptr }, 
@@ -52,4 +53,10 @@ public:
 	void label(string& dst);
 
 	void rkLabel(string& dst);
+
+	void mark() {
+		_marked = true;
+	}
+
+	bool isMarked() { return _marked; }
 };
