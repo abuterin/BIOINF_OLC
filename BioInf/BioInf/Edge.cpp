@@ -71,3 +71,34 @@ void Edge::label(string & dst) {
 		dst = destiantion->getSequence().substr(start, len);
 	}
 }
+
+void Edge::rkLabel(string & dst) {
+	std::string label;
+	this->label(label);
+
+	dst = "";
+
+	for (int i = label.size() - 1; i >= 0; --i) {
+
+		char c = label[i];
+
+		switch (c) {
+		case 'A':
+			c = 'T';
+			break;
+		case 'T':
+			c = 'A';
+			break;
+		case 'C':
+			c = 'G';
+			break;
+		case 'G':
+			c = 'C';
+			break;
+		default:
+			break;
+		}
+
+		dst += c;
+	}
+}

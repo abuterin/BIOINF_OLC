@@ -54,4 +54,6 @@ public:
 	int labelLength();
 
 	void label(string& dst);
+
+	void rkLabel(string& dst);
 };
