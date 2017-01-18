@@ -35,6 +35,4 @@ First line builds the program and creates .exe named overlap.
 Second line runs the overlap program using two input files, one for reads and one for overlaps.
 
 
-##Testing examples
-(kako koriste alati za testiranje?!?!)
 
