@@ -27,7 +27,7 @@ Program can be built, debugged and run from there.
 Alternative:
 in command prompt use next lines:
 
-g++ -std=c++11 Main.cpp -o layout
+g++ -std=c++11 Read.cpp  Assembler.cpp Graph.cpp MHAPOverlap.cpp Edge.cpp edlib.cpp StringGraphComponent.cpp StringGraphWalk.cpp Utils.cpp Vertex.cpp Walk.cpp Main.cpp -o layout
 
 layout input_reads.fasta input_overlaps.mhap
 
