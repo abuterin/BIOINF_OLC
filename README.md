@@ -27,9 +27,9 @@ Program can be built, debugged and run from there.
 On Linux:
 Position yourself in /BIOINF_OLC/BioInf/BioInf/ file. Run next lines in command prompt:
 
-### g++ -std=c++11 Read.cpp  Assembler.cpp Graph.cpp MHAPOverlap.cpp Edge.cpp edlib.cpp StringGraphComponent.cpp StringGraphWalk.cpp Utils.cpp Vertex.cpp Walk.cpp Main.cpp -o layout
+	g++ -std=c++11 Read.cpp  Assembler.cpp Graph.cpp MHAPOverlap.cpp Edge.cpp edlib.cpp StringGraphComponent.cpp StringGraphWalk.cpp Utils.cpp Vertex.cpp Walk.cpp Main.cpp -o layout
 
-### ./layout lambda_reads.fasta out.mhap result.fasta
+	./layout lambda_reads.fasta out.mhap result.fasta
 
 First line builds the program and creates .exe named overlap.
 Second line runs the overlap program using two input files, one for reads and one for overlaps.
