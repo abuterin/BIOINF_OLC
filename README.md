@@ -24,8 +24,8 @@ Open the BIOINF_OLC\BioInf folder, inside a file named "BioInf" (type Microsoft 
 An .sln file that opens a project inside Microsoft Visual Studio application.
 Program can be built, debugged and run from there. 
 
-Alternative:
-in command prompt use next lines:
+On Linux:
+Position yourself in /BIOINF_OLC/BioInf/BioInf/. Run next lines in command prompt:
 
 g++ -std=c++11 Read.cpp  Assembler.cpp Graph.cpp MHAPOverlap.cpp Edge.cpp edlib.cpp StringGraphComponent.cpp StringGraphWalk.cpp Utils.cpp Vertex.cpp Walk.cpp Main.cpp -o layout
 
