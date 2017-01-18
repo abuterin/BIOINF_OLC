@@ -27,8 +27,9 @@ Program can be built, debugged and run from there.
 Alternative:
 in command prompt use next lines:
 
-gcc main.c -o overlap
-overlap input_reads.fasta input_overlaps.mhap
+g++ -std=c++11 Main.cpp -o layout
+
+layout input_reads.fasta input_overlaps.mhap
 
 First line builds the program and creates .exe named overlap.
 Second line runs the overlap program using two input files, one for reads and one for overlaps.
