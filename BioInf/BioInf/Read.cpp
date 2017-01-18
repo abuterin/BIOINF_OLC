@@ -2,7 +2,7 @@
 
 string Read::reverseComplement() {
 	if (_reverseComplement.empty()) {
-		for (size_t i = _read.length() - 1; i >= 0; i--) {
+		for (int i = _read.length() - 1; i >= 0; i--) {
 			if (_read[i] == 'A') {
 				_reverseComplement.append("T");
 			}

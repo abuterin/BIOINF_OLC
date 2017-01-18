@@ -28,7 +28,7 @@ Graph::Graph(map<unsigned int, Read*> reads, vector<DovetailOverlap*> overlaps) 
 		edge_a->pairId = edge_b->edgeId;
 		edge_a->_pair = edge_b;
 		edge_b->pairId = edge_a->edgeId;
-		edge_a->_pair = edge_b;
+		edge_b->_pair = edge_a;
 	}
 	//Edge(uint32_t id, uint32_t readId, Overlap* overlap, StringGraph* graph);
 	//Edge(edges_.size(), overlap->a(), overlap, this);
@@ -84,6 +84,9 @@ bool Graph::trim() {	//as defined in (Vaser, 2015), page 23s
 				//check if the opposing vertex has a similar edge
 				unsigned int overtexId = _edges[i]->opposite(it->first);//opposite vertex ID
 				Vertex* overtex = this->getVertexById(overtexId);
+				if (overtex == nullptr) {
+					continue;
+				}
 				vector<Edge*> oedges = _edges[i]->overlap->part(overtexId) == true ? overtex->edges_b : overtex->edges_e;
 				bool isTip = false;
 				for (unsigned int j = 0; j < oedges.size(); j++) {
@@ -621,7 +624,7 @@ int Graph::markUnitig(std::vector<Edge*>* dst_edges, std::vector<int>* unitig_id
 		Vertex* next = edge->getDst();
 
 		// if curr and next do not share best overlap
-		if (next->bestEdge(1 - use_suffix)->getOverlap() != edge->getOverlap()) {
+		if (next->bestEdge(1- use_suffix) == nullptr || next->bestEdge(1 - use_suffix)->getOverlap() != edge->getOverlap()) {
 			break;
 		}
 

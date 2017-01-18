@@ -66,7 +66,13 @@ vector<Walk*> Walk::extend(bool direction, Graph* graph) {
 				}
 
 				_lastNode = _nodes.back();
-				walks.push_back(this);
+				if (_lastNode != nullptr) {
+					walks.push_back(this);
+				}
+				else {
+					_nodes.pop_back();
+					_lastNode = _nodes.back();
+				}
 			}
 
 			else {
@@ -87,7 +93,13 @@ vector<Walk*> Walk::extend(bool direction, Graph* graph) {
 					newWalk->addNode(vertices[edge->overlap->aID()]);	//add vertex from the opposite end of the edge
 				}
 				
-				walks.push_back(newWalk);
+				if (newWalk->lastNode() == nullptr) {
+					delete newWalk;
+				}
+				else {
+					walks.push_back(newWalk);
+				}
+				
 			}
 			_pathEdges.push_back(edge);
 			edge->setInWalk(true);
@@ -101,14 +113,14 @@ vector<Walk*> Walk::extend(bool direction, Graph* graph) {
 }
 
 void Walk::rewindTo(unsigned int junctionID) {
-	size_t i;
+	int i;
 
 	for (i = _nodes.size() - 1; i > 0; i--) {
 		if (_nodes[i]->readID == junctionID) {
 			break;
 		}
 		else {	//remove edges from walk
-			for (size_t j = _pathEdges.size() - 1; j >= 0; j--) {
+			for (int j = _pathEdges.size() - 1; j >= 0; j--) {
 				Edge* edge = _pathEdges[j];
 				if (edge->overlap->aID() == _nodes[i]->readID || edge->overlap->bID() == _nodes[i]->readID) {//if the edge contains current node
 					edge->setInWalk(false);
