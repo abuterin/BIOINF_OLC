@@ -18,12 +18,12 @@ class Edge;
 #define MAX_STEPS 20
 #define MAX_WALKS 20
 
-int NOT_FOUND = -1;
-int NOT_DEFINED = -1;
+#define NOT_FOUND  -1
+#define NOT_DEFINED  -1
 
-int MAX_NODES = 160;
-int MAX_DISTANCE = MAX_NODES * 10000;
-double MAX_DIFFERENCE = 0.25;
+#define MAX_NODES  160
+#define MAX_DISTANCE  (MAX_NODES * 10000)
+#define MAX_DIFFERENCE  (0.25)
 
 
 /**

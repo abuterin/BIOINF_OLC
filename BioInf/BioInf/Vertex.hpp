@@ -31,8 +31,8 @@ public:
 	int getLength() {
 		return readString.size();
 	}
-	const string& getSequence() {
-		return read->sequence();
+	string getSequence() {
+		return read->read();
 	}
 
 

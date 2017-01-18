@@ -6,7 +6,7 @@ using namespace std;
 /**
 	Class created by Ante
 */
-#pragma region kCoder
+//#pragma region kCoder
 /*************************************************************************************** /
 * Title: RNA Assembler source code
 * Author : rvaser (robert.vaser@gmail.com)
@@ -14,7 +14,7 @@ using namespace std;
 * Availability : https://github.com/mariokostelac/ra
 ****************************************************************************/
 
-std::vector<char> kCoder = {
+/*std::vector<char> kCoder = {
 	-1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
 	-1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
 	-1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
@@ -43,7 +43,7 @@ std::vector<char> kCoder = {
 	-1,  -1,  -1,  -1,  -1
 };
 
-#pragma endregion
+#pragma endregion*/
 
 class Read {
 private:
@@ -54,14 +54,14 @@ private:
 	double _coverage;
 
 public:
-	Read(string read, unsigned int ID, const std::string& sequence) : _read{ read }, _ID{ ID }, _coverage{ 1.0 } {
-		sequence_.reserve(sequence.size());
+	Read(string read, unsigned int ID/*, const std::string& sequence*/) : _read{ read }, _ID{ ID }, _coverage{ 1.0 } {
+		/*sequence_.reserve(sequence.size());
 		for (uint32_t i = 0; i < sequence.size(); ++i) {
 			auto c = kCoder[sequence[i]];
 			if (c != -1) {
 				sequence_.push_back(c);
 			}
-		}
+		}*/
 	}
 
 	string reverseComplement();
@@ -70,8 +70,8 @@ public:
 	unsigned int ID() { return _ID; }
 	double coverage() { return _coverage; }
 
-	const string& sequence() const {
+	/*const string& sequence() const {
 		return sequence_;
-	}
+	}*/
 
 };

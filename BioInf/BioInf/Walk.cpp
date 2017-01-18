@@ -45,6 +45,9 @@ vector<Walk*> Walk::extend(bool direction, Graph* graph) {
 		for (size_t i = 0; i < _edges.size(); i++) {
 			Walk* newWalk;		//new forked walk
 			Edge* edge = _edges[i]; //current edge
+			if (edge == nullptr) {
+				continue;
+			}
 
 			if (i == _edges.size() - 1) {	//save last forking in current (this) walk
 				if (edge->overlap->aID() == this->_lastNode->readID) {
@@ -88,7 +91,9 @@ vector<Walk*> Walk::extend(bool direction, Graph* graph) {
 			}
 			_pathEdges.push_back(edge);
 			edge->setInWalk(true);
-			edge->pair()->setInWalk(true);//mark edge and its pairId edge as part of the walk
+			if (edge->pair() != nullptr) {
+				edge->pair()->setInWalk(true);//mark edge and its pairId edge as part of the walk
+			}
 		}
 	}
 

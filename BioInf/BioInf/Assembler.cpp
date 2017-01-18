@@ -26,23 +26,35 @@ void Assembler::filterContained(std::vector<DovetailOverlap*>& overlaps, map<uns
 	}
 
 	index = 0;
+	vector<unsigned int> markedReads;
 
 	for (size_t i = 0; i < overlaps.size(); i++) {
 		if (containedReads->find(overlaps[i]->aID()) != containedReads->end()) { //read A found
 			delete reads.find(overlaps[i]->aID())->second;
-			reads.erase(overlaps[i]->aID());			//remove sequence read also
+			reads.find(overlaps[i]->aID())->second = nullptr;
+			markedReads.push_back(overlaps[i]->aID());
+			//reads.erase(overlaps[i]->aID());			//remove sequence read also
 			delete overlaps[i];
 			continue;
 		}
 		else if (containedReads->find(overlaps[i]->bID()) != containedReads->end()) {//read B found
-			delete reads.find(overlaps[i]->aID())->second;
-			reads.erase(overlaps[i]->bID());			//remove sequence read also
+			delete reads.find(overlaps[i]->bID())->second;
+			reads.find(overlaps[i]->bID())->second = nullptr;
+			markedReads.push_back(overlaps[i]->bID());
+			//reads.erase(overlaps[i]->bID());			//remove sequence read also
 			delete overlaps[i];
 			continue;	
 		}
 
 		overlaps[index] = overlaps[i];
 		index++;
+	}
+
+	for (size_t i = 0; i < markedReads.size(); i++) {
+		map<unsigned int, Read*>::iterator it = reads.find(markedReads[i]);
+		if (it != reads.end()) {
+			reads.erase(it);
+		}	
 	}
 
 	overlaps.resize(index);
