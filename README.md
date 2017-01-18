@@ -29,7 +29,7 @@ in command prompt use next lines:
 
 g++ -std=c++11 Read.cpp  Assembler.cpp Graph.cpp MHAPOverlap.cpp Edge.cpp edlib.cpp StringGraphComponent.cpp StringGraphWalk.cpp Utils.cpp Vertex.cpp Walk.cpp Main.cpp -o layout
 
-layout input_reads.fasta input_overlaps.mhap
+./layout lambda_reads.fasta out.mhap result.fasta
 
 First line builds the program and creates .exe named overlap.
 Second line runs the overlap program using two input files, one for reads and one for overlaps.
