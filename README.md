@@ -1,3 +1,6 @@
+This is a project for class Bioinformatics on University of Zagreb - Faculty of Electrical Engineering and Computing
+link for class page: http://www.fer.unizg.hr/predmet/bio
+
 ## Requirements (for running the software)
 - g++ 
 - GNU 
