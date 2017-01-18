@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef GRAPH_COMPONENT_H_
+#define GRAPH_COMPONENT_H_
 #include "CommonHeaders.hpp"
 
 #include "Edge.hpp"
@@ -36,3 +38,4 @@ public:
 		return vertices_;
 	}
 };
+#endif //GRAPH_COMPONENT_H_

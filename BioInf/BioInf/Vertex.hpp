@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿//#pragma once
+#ifndef VERTEX_H_
+#define VERTEX_H_
 #include "CommonHeaders.hpp"
 
 using namespace std;
@@ -36,9 +38,9 @@ public:
 	}
 
 
-	list<Edge*>& getEdgesB();
+	vector<Edge*>& getEdgesB();
 
-	list<Edge*>& getEdgesE();
+	vector<Edge*>& getEdgesE();
 
 	void addEdge(Edge* _edge);
 
@@ -61,3 +63,4 @@ public:
 
 	bool isMarked() { return _marked; }
 };
+#endif //VERTEX_H_

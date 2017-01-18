@@ -1,4 +1,7 @@
-#pragma once
+//#pragma once
+#ifndef GRAPH_WALK_H_
+#define GRAPH_WALK_H_
+
 #include "CommonHeaders.hpp"
 
 #include "Edge.hpp"
@@ -73,3 +76,4 @@ public:
 	*/
 	bool containsEdge(int id);
 };
+#endif //GRAPH_WALK_H_

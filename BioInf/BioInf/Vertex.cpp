@@ -1,19 +1,20 @@
 ﻿#include "Vertex.hpp"
+#include "Read.hpp"
 #include "Edge.hpp"
 
-list<Edge*>& Vertex::getEdgesB() {
-	list<Edge*> edgesB;
-	for (auto& it : edges_b) {
+vector<Edge*>& Vertex::getEdgesB() {
+	/*vector<Edge*> edgesB;
+	for (Edge* it : edges_b) {
 		edgesB.push_back(it);
-	}
-	return edgesB;
+	}*/
+	return edges_b;
 }
-list<Edge*>& Vertex::getEdgesE() {
-	list<Edge*> edgesE;
-	for (auto& it : edges_e) {
+vector<Edge*>& Vertex::getEdgesE() {
+	/*vector<Edge*> edgesE;
+	for (Edge* it : edges_e) {
 		edgesE.push_back(it);
-	}
-	return edgesE;
+	}*/
+	return edges_e;
 }
 void Vertex::addEdge(Edge* _edge) {
 	bool using_suffix = _edge->overlap->isUsingSuffix(this->readID);

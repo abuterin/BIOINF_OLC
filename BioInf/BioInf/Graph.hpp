@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿//#pragma once
+#ifndef GRAPH_H_
+#define GRAPH_H_
+
 #include "CommonHeaders.hpp"
 
 #include "edlib.h"
@@ -15,6 +18,7 @@ class Edge;
 
 #define ABS(x) ((x < 0) ? x * (-1) : x)
 #define MAX(x,y) ((x > y) ? x : y)
+#define min(a, b)  (a < b ? a : b)
 #define MAX_STEPS 20
 #define MAX_WALKS 20
 
@@ -92,3 +96,4 @@ public:
 	void deleteMarkedVertices();
 
 };
+#endif //GRAPH_H_

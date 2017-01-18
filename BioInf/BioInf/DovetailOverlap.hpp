@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef DOVETAIL_OVERLAP_H_
+#define DOVETAIL_OVERLAP_H_
 
 #include "CommonHeaders.hpp"
 
@@ -86,3 +88,4 @@ public:
 	*/
 
 };
+#endif //DOVETAIL_OVERLAP_H_

@@ -1,15 +1,17 @@
-#pragma once
+//#pragma once
+#ifndef COMMON_H_
+#define COMMON_H_
 #include <iostream>
 #include <vector>
 #include <map>
-#include <minmax.h>
+//#include <minmax.h>
 #include <algorithm>    // std::sort
 #include <list>
 #include <unordered_set>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
-#include <string>
+#include <cstring>
 #include <set>
 #include "Read.hpp"
 #include "MHAPOverlap.hpp"
@@ -23,5 +25,5 @@
 //#include "StringGraphComponent.hpp"
 //#include "Utils.hpp"
 //#include "Walk.hpp"
-
+#endif
 

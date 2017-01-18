@@ -1,4 +1,7 @@
-#pragma once
+//#pragma once
+#ifndef MHAP_OVERLAP_H_
+#define MHAP_OVERLAP_H_
+
 #include "CommonHeaders.hpp"
 
 /**
@@ -75,3 +78,4 @@ public:
 		return output;
 	}
 };
+#endif //MHAP_OVERLAP_H_

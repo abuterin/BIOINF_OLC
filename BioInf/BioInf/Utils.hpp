@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef UTILS_H_
+#define UTILS_H_
 #include <string>
 #include <sys/stat.h>
 #include "CommonHeaders.hpp"
@@ -23,3 +25,4 @@ typedef unsigned int uint;
 std::string reverseComplement(const std::string& original);
 
 void debug(const char* fmt, ...);
+#endif //UTILS_H_

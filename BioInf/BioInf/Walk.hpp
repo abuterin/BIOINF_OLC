@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef WALK_H_
+#define WALK_H_
 #include "CommonHeaders.hpp"
 
 #include "Edge.hpp"
@@ -40,3 +42,4 @@ public:
 
 	void extractSequence(string&);
 };
+#endif //WALK_H_

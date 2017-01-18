@@ -394,7 +394,7 @@ void Graph::simplify() {
 		// bubble popping
 		size_t num_edges_before = edges.size();
 
-		fprintf(stderr, "[SG][bubble popping]: max bucket size %lu\n", MAX_NODES);
+		fprintf(stderr, "[SG][bubble popping]: max bucket size %d\n", MAX_NODES);
 		popBubbles();
 
 		++numBubbleRounds;

@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef ASSEMBLER_H_
+#define ASSEMBLER_H_
 #include "CommonHeaders.hpp"
 
 #include "DovetailOverlap.hpp"
@@ -59,3 +61,4 @@ public:
 
 	~Assembler() { assembler = nullptr; }
 };
+#endif //ASSEMBLER_H_

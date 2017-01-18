@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef EDGE_H_
+#define EDGE_H_
 //#include "CommonHeaders.hpp"
 
 #include "Vertex.hpp"
@@ -65,3 +67,4 @@ public:
 
 	Vertex* oppositeVertex(unsigned int id);
 };
+#endif //EDGE_H_

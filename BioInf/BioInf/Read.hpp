@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef READ_H_
+#define READ_H_
 #include "CommonHeaders.hpp"
 
 using namespace std;
@@ -75,3 +77,4 @@ public:
 	}*/
 
 };
+#endif //READ_H_

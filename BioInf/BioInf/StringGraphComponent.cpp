@@ -20,7 +20,7 @@ double QUALITY_THRESHOLD = 1.0;
 *************************************************************************************** */
 
 double overlap_score(DovetailOverlap* overlap); //declaration
-int longest_sequence_length(Vertex* from, int direction, std::vector<bool>& visited,
+static int longest_sequence_length(Vertex* from, int direction, std::vector<bool>& visited,
 	int forks_left); //declaration
 
 static int expandVertex(std::vector<Edge*>& dst, Vertex* start, int start_direction, uint32_t maxId, int max_branches) {

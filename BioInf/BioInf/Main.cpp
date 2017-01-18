@@ -1,4 +1,5 @@
-#pragma once
+//#pragma once
+
 #include "CommonHeaders.hpp"
 
 #include "Read.hpp"
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]) {
 	ifstream fastaFile(argv[1]);
 	FILE* mhapFile;
 	ofstream outputFile(argv[3]);
-	fopen_s(&mhapFile, argv[2], "r");
+	mhapFile = fopen(argv[2], "r");
 	/*ofstream outFile;
 	outFile.open("results.mhap");
 	*/
@@ -104,7 +105,7 @@ int main(int argc, char *argv[]) {
 	fastaFile.close();
 
 	Overlaps overlaps; // vector<MHAPOverlap*>
-	while (fscanf_s(mhapFile, "%u %u %lf %u %d %u %u %u %d %u %u %u\n", &aID, &bID, &error, &sharedMinMers, &aFwd, &aStart, &aEnd,
+	while (fscanf(mhapFile, "%u %u %lf %u %d %u %u %u %d %u %u %u\n", &aID, &bID, &error, &sharedMinMers, &aFwd, &aStart, &aEnd,
 		&aLength, &bFwd, &bStart, &bEnd, &bLength) == 12) {
 		bool aForward = (aFwd == 1) ? false : true;
 		bool bForward = (bFwd == 1) ? false : true;
